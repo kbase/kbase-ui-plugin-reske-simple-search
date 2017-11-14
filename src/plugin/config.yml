@@ -1,0 +1,75 @@
+## ui config file for the RESKE search interface
+---
+package:
+    author: Erik Pearson
+    name: reske-simple-search
+    description: The search panel and associated widgets
+    date: Nov 13, 2017
+source:
+    ## sources are relative to build/plugins/PACKAGE/source/javascript
+    ## NB: need to quote file names, otherwise
+    modules:
+    styles:
+        -
+            file: styles.css
+install:
+    widgets:
+        -
+            module: panel
+            id: kb_reskeSimpleSearch_panel
+            type: factory
+            css: true
+    ko-components:
+        -
+            name: reske-simple-search/main
+            module: components/main
+        -
+            name: reske-simple-search/search
+            module: components/search
+        -
+            name: reske-simple-search/browser
+            module: components/browser
+        -
+            name: reske-simple-search/search-result
+            module: components/searchResult
+        -
+            name: reske-simple-search/type-filter-control
+            module: components/typeFilterControl
+        -
+            name: reske-simple-search/shared-icon
+            module: components/sharedIcon   
+        -
+            name: reske-simple-search/search-help
+            module: components/searchHelp
+        -
+            name: reske-simple-search/search-error
+            module: components/searchError
+        # GENERIC
+        -
+            name: reske-simple-search/dialog
+            module: components/generic/dialog
+        -
+            name: reske-simple-search/table
+            module: components/generic/table
+        -
+            name: reske-simple-search/overlay-panel
+            module: components/generic/overlayPanel
+        -
+            name: reske-simple-search/help
+            module: components/generic/help
+        -
+            name: reske-simple-search/error
+            module: components/generic/error
+
+    routes:
+        -
+            path: ['reske-simple-search', 'search']
+            widget: kb_reskeSimpleSearch_panel
+            authorization: true
+    menu:
+        -
+            name: reske-simple-search
+            definition:
+                path: reske-simple-search/search
+                label: Search
+                icon: search

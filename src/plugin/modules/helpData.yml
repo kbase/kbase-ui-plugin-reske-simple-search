@@ -1,0 +1,27 @@
+# JGI Search Help Topics
+---
+topics:
+  -
+    id: overview
+    title: Overview
+    content: |
+      RESKE Simple Search Overview
+
+  -
+    id: search-syntax
+    title: Search Syntax
+    content: |
+      This should describe the search syntax ...
+
+      > please provide examples
+  -
+    id: how-indexed
+    title: What data is indexed?
+    content: |
+        Describe the types indexed, perhaps provide or link to docs which describe the indexed fields. 
+
+references:
+  -
+    url: http://kbase.us/help/reske-simple-search/
+    title: Help Page for Reske Simple Search
+    external: true

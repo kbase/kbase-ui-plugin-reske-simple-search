@@ -1,0 +1,26 @@
+{
+    "name": "kbase-ui-plugin-reske-simple-search",
+    "description": "A simple search interface to the RESKE search service",
+    "keywords": [
+        "kbase", "widget"
+    ],
+    "author": [
+        "eapearson@lbl.gov"
+    ],
+    "moduleType": "kbase-ui-plugin",
+    "main": "src/plugin/config.yml",
+    "ignore": [
+        ".gitignore"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/kbase/kbase-ui-plugin-reske-simple-search"
+    },
+    "dependencies": {
+        "bluebird": "^3.0.0",
+        "bootstrap": "^3.3.0",
+        "kbase-common-js": "^2.9.1"
+    },
+    "devDependencies": {},
+    "license": "SEE LICENSE IN LICENSE.md"
+}
