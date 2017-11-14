@@ -17,7 +17,7 @@ define([
         function attach(node) {
             hostNode = node;
             container = hostNode.appendChild(document.createElement('div'));
-            container.classList.add('plugin-reske-search');
+            container.classList.add('plugin-reske-simple-search');
         }
 
         function start() {
