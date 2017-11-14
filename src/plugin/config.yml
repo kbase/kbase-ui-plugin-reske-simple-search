@@ -63,13 +63,13 @@ install:
 
     routes:
         -
-            path: ['reske-simple-search', 'search']
+            path: ['search']
             widget: kb_reskeSimpleSearch_panel
             authorization: true
     menu:
         -
             name: reske-simple-search
             definition:
-                path: reske-simple-search/search
+                path: search
                 label: Search
                 icon: search

@@ -21,7 +21,7 @@ define([
         }
 
         function start() {
-            runtime.send('ui', 'setTitle', 'Simple Search');
+            runtime.send('ui', 'setTitle', 'Search');
 
             container.innerHTML = utils.komponent({
                 name: 'reske-simple-search/main',
