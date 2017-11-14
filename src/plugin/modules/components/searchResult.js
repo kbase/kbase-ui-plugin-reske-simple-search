@@ -62,6 +62,24 @@ define([
 
         var columns = [
             {
+                name: 'narrativeTitle',
+                label: 'Narrative',
+                type: 'string',
+                // widths are summed, and each column's actual width attribute
+                // is set as the percent of total.
+                width: 35,
+                action: {
+                    fn: doOpenNarrative
+                }
+            },
+            {
+                name: 'type',
+                label: 'Type',
+                type: 'string',
+                width: 8
+            },   
+            
+            {
                 name: 'objectName',
                 label: 'Object',
                 type: 'string',
@@ -71,23 +89,6 @@ define([
                 width: 35,
                 action: {
                     fn: doViewObject
-                }
-            },
-            {
-                name: 'type',
-                label: 'Type',
-                type: 'string',
-                width: 8
-            },   
-            {
-                name: 'narrativeTitle',
-                label: 'Narrative',
-                type: 'string',
-                // widths are summed, and each column's actual width attribute
-                // is set as the percent of total.
-                width: 35,
-                action: {
-                    fn: doOpenNarrative
                 }
             },
             {
