@@ -76,7 +76,7 @@ define([
                 name: 'type',
                 label: 'Type',
                 type: 'string',
-                width: 8
+                width: 12
             },   
             
             {
@@ -109,7 +109,7 @@ define([
                 name: 'owner',
                 label: 'Owner',
                 type: 'string',
-                width: 8,
+                width: 12,
                 action: {
                     fn: doOpenProfile
                 }

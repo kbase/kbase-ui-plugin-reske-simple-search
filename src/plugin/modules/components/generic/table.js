@@ -6,9 +6,11 @@ define([
     html
 ) {
     'use strict';
+
     var t = html.tag,
         div = t('div'),
         span = t('span'),
+        p = t('p'),
         a = t('a');
 
     var styles = html.makeStyles({
@@ -77,16 +79,10 @@ define([
                 }
             }
         },
-        // cell: {
-        //     styles: {
-        //         flex: '1 1 0px'
-        //     }
-        // },
         cell: {
             flex: '0 0 0px',
             overflow: 'hidden',
             whiteSpace: 'nowrap',
-            // textOverflow: 'ellipsis',
             border: '1px silver solid',
             height: '35px',
             padding: '2px',
@@ -98,7 +94,6 @@ define([
             flex: '0 0 0px',
             overflow: 'hidden',
             whiteSpace: 'nowrap',
-            // textOverflow: 'ellipsis',
             border: '1px silver solid',
             height: '35px',
             padding: '2px',
@@ -108,88 +103,10 @@ define([
         },
         innerCell: {
             flex: '1 1 0px',
-            // display: 'flex',
-            // flexDirection: 'column',
             overflow: 'hidden',
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis'
         },
-        // titleCell: {
-        //     flexBasis: '22%'
-        // },
-        // piCell: {
-        //     css: {
-        //         flexBasis: '10%'
-        //     }
-        // },
-        // cellLink: {
-        //     pseudo: {
-        //         hover: {
-        //             textDecoration: 'underline',
-        //             backgroundColor: '#EEE',
-        //             cursor: 'pointer'
-        //         }
-        //     }
-        // },
-        // proposalId: {
-        //     flexBasis: '5%',
-        //     textAlign: 'right',
-        //     paddingRight: '3px'
-        // },
-        // sequencingProjectId: {
-        //     css: {
-        //         flexBasis: '5%',
-        //         textAlign: 'right',
-        //         paddingRight: '3px'
-        //     },
-        //     pseudo: {
-        //         hover: {
-        //             textDecoration: 'underline',
-        //             backgroundColor: '#EEE',
-        //             cursor: 'pointer'
-        //         }
-        //     }
-        // },
-        // pmoProjectId: {
-        //     css: {
-        //         flexBasis: '5%',
-        //         textAlign: 'right',
-        //         paddingRight: '3px',
-        //         fontStyle: 'italic',
-        //         color: 'gray'
-        //     }
-        // },
-        // // analysisProjectId: {
-        // //     flexBasis: '7%',
-        // //     textAlign: 'right',
-        // //     paddingRight: '3px'
-        // // },
-
-        // dateCell: {
-        //     flexBasis: '10%'
-        // },
-        // scientificNameCell: {
-        //     flexBasis: '17%'
-        // },
-        // dataTypeCell: {
-        //     flexBasis: '5%'
-        // },
-        // s1Cell: {
-        //     flexBasis: '7%'
-        // },
-        // s2Cell: {
-        //     flexBasis: '7%'
-        // },
-        // // s3Cell: {
-        // //     flexBasis: '5%'
-        // // },
-        // fileSizeCell: {
-        //     flexBasis: '7%'
-        // },
-        // transferCell: {
-        //     flexBasis: '5%',
-        //     textAlign: 'center'
-        // },
         sectionHeader: {
             padding: '4px',
             fontWeight: 'bold',
@@ -242,7 +159,6 @@ define([
             column.rowStyle = s;
         });
 
-
         var sortColumn = ko.observable('timestamp');
 
         var sortDirection = ko.observable('descending');
@@ -263,7 +179,6 @@ define([
 
         // we hinge upon the height, which is updated when we start and when the ...
         var height = ko.observable();
-        
         
         function calcHeight() {
             return componentInfo.element.querySelector('.' + styles.classes.tableBody).clientHeight;
@@ -296,10 +211,10 @@ define([
         // Calculate the height immediately upon component load
         height(calcHeight());
 
-        table.rows.subscribe(function () {
-            // console.log('table rows??', table.rows());
+        // table.rows.subscribe(function () {
+        //     // console.log('table rows??', table.rows());
             
-        });
+        // });
 
         function doOpenUrl(data) {
             if (!data.url) {
@@ -317,8 +232,6 @@ define([
             }
         }
         
-        console.log('here');
-
         return {
             rows: table.rows,
             isLoading: table.isLoading,
@@ -450,8 +363,6 @@ define([
 
     function buildResultsRows() {
         var rowClass = {};
-        // rowClass[styles.classes.selected] = 'selected()';
-        // rowClass[styles.classes.private] = '!isPublic';
         return div({
             dataBind: {
                 foreach: {
@@ -537,9 +448,6 @@ define([
                     }),
                     '<!-- /ko -->',
 
-
-
-
                     '<!-- /ko -->',
 
                     '<!-- /ko -->',
@@ -602,20 +510,20 @@ define([
         ]);
     }
 
-    function buildLoading() {
-        // return tbody({}, [
-        //     tr([
-        //         td({
-        //             dataBind: {
-        //                 attr: {
-        //                     colspan: 'columns.length'
-        //                 }
-        //             }
-        //         }, html.loading())
-        //     ])
-        // ]);
-        return html.loading();
-    }
+    // function buildLoading() {
+    //     // return tbody({}, [
+    //     //     tr([
+    //     //         td({
+    //     //             dataBind: {
+    //     //                 attr: {
+    //     //                     colspan: 'columns.length'
+    //     //                 }
+    //     //             }
+    //     //         }, html.loading())
+    //     //     ])
+    //     // ]);
+    //     return html.loading();
+    // }
 
     // function buildError() {
     //     return div({}, [
@@ -636,6 +544,17 @@ define([
     //     ]);
     // }
 
+    function buildNoActiveSearch() {
+        return div([
+            p('NO ACTIVE SEARCH - PLACEHOLDER')
+        ]);
+    }
+
+    function buildNoResults() {
+        return div([
+            p('NO RESULTS FROM SEARCH - PLACEHOLDER')
+        ]);
+    }
 
     function template() {
         return div({
@@ -651,26 +570,28 @@ define([
                 class: styles.classes.tableBody
             }, [
                 // Handle case of a search having been run, but nothing found.
-                '<!-- ko if: $component.state() === "notfound" -->',
+                '<!-- ko switch: $component.state() -->', 
+
+                '<!-- ko case: "notfound" -->',
                 div({
                     style: {
                         padding: '12px',
                         backgroundColor: 'silver',
                         textAlign: 'center'
                     }
-                }, 'no results, keep trying!'),
+                }, buildNoResults()),
                 '<!-- /ko -->',
 
                 // Handle case of no active search. We don't want to confuse the user 
                 // by indicating that nothing was found.
-                '<!-- ko if: $component.state() === "none" -->',
+                '<!-- ko case: "none" -->',
                 div({
                     style: {
                         padding: '12px',
                         backgroundColor: 'silver',
                         textAlign: 'center'
                     }
-                }, 'no active search'), // buildNoActiveSearch()),
+                }, buildNoActiveSearch()), // buildNoActiveSearch()),
                 '<!-- /ko -->',
 
                 // Handle case of a search being processed
@@ -678,17 +599,19 @@ define([
                 // buildLoading(),
                 // '<!-- /ko -->',
 
-                // '<!-- ko ifnot: $component.isLoading() -->',
-                // We have results!
+                '<!-- ko case: $default -->',
+                
                 '<!-- ko if: $component.rows().length > 0 -->',
                 buildResultsRows(),
                 '<!-- /ko -->',
-                // '<!-- /ko -->'
-            ])
-            
 
+                '<!-- /ko -->',
+
+                '<!-- /ko -->'
+            ])
         ]);
     }
+
     function component() {
         return {
             viewModel: {
