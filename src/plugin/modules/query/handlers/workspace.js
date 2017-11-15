@@ -9,6 +9,9 @@ define([
     serviceUtils,
     Cacher
 ) {
+    var objectCache = Cacher();
+    var workspaceCache = Cacher();
+
     function factory(config) {
         var runtime = config.runtime;
 
@@ -17,8 +20,6 @@ define([
             module: 'Workspace',
             token: runtime.service('session').getAuthToken()
         });
-
-        var objectCache = Cacher();
 
         function objectQuery(refSpecs) {
             var resultsMap = {};
@@ -72,7 +73,7 @@ define([
             });
         }
 
-        var workspaceCache = Cacher();
+        
 
         function workspaceQuery(ids) {
             var resultsMap = {};

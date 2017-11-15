@@ -491,6 +491,8 @@ define([
         // At the moment, this must come after the workspace slathering, because the 
         // object owners are not reliably in search results.
         function slatherFromUserProfiles(searchResult) {
+            var timer = Timer();
+            timer.startTimer('get user profiles');
             var queryEngine = QueryEngine.make({
                 runtime: runtime
             });
@@ -528,11 +530,8 @@ define([
                             });
                         })
                         .then(function () {
-
-                        // Get the user profiles.
-
-                        // Loop through the results again setting the owner username on each item.
-                            // console.log('SLATHER DONE');
+                            timer.stopTimer('get user profiles');
+                            timer.log();
                             return searchResult;
                         });
                 });
@@ -542,6 +541,8 @@ define([
             var queryEngine = QueryEngine.make({
                 runtime: runtime
             });
+            var timer = Timer();
+            timer.startTimer('get workspace and object info');
             return queryEngine.start()
                 .then(function () {
                     var foundObjects = searchResult.objects;
@@ -630,6 +631,8 @@ define([
                             });
                         })
                         .then(function () {
+                            timer.stopTimer('get workspace and object info');
+                            timer.log();
                             return searchResult;
                         });
                 });
