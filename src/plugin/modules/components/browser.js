@@ -165,13 +165,6 @@ define([
             }
         }
 
-        var pageSizes = [5, 10, 20, 50, 100].map(function (value) {
-            return {
-                label: String(value),
-                value: String(value)
-            };
-        });
-
         function dispose() {
         }
 
@@ -196,7 +189,6 @@ define([
             pageValues: pageValues,
             pageSize: pageSize,
             pageSizeInput: pageSizeInput,
-            pageSizes: pageSizes,
 
             pageFrom: pageFrom,
             pageTo: pageTo,

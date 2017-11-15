@@ -97,6 +97,35 @@ define([
 
         var error = ko.observable();
 
+        // SOMEbody needs to figure out the new page size
+        // and adjust the current page. We want to 
+        // preserve the position within the search result space
+        // as much as possible.
+        // If this were scrolling, without pages, the job would be much easier,
+        // we could simply keep the same exact starting result item.
+        // In this approach we'll need to ensure that the first result
+        // item in the page is still visible, but it might shift down the
+        // page a bit.
+        pageSize.subscribeChanged(function (newValue, oldValue) {
+            var currentPage = page();
+
+            if (!currentPage) {
+                return;
+            }
+
+            // console.log('subscribe changed', newValue, oldValue);
+            // var currentTopResultItem = (currentPage - 1) * oldValue + 1;
+
+            var newPage = Math.floor((currentPage - 1) * oldValue / newValue) + 1;
+
+            // var newPage = Math.floor(currentTopResultItem / newValue) + 1;
+
+            // console.log('page size triggers new page', currentPage, newPage, newValue, oldValue);
+
+            page(newPage);
+
+        });
+
         function doSearch(params) {
             Promise.try(function () {
                 searching(true);
@@ -192,16 +221,44 @@ define([
                 query: searchQuery(),
                 withPrivateData: withPrivateData(),
                 withPublicData: withPublicData(),
+                typeFilter: typeFilter(),
                 page: page(),
                 pageSize: pageSize(),
-                typeFilter: typeFilter(),
                 sortingRules: sortingRules()
             };
         });
 
-        searchParams.subscribe(function (newValue) {
-            doSearch(newValue);
+        var searchInputs = ko.pureComputed(function () {
+            return {
+                query: searchQuery(),
+                withPrivateData: withPrivateData(),
+                withPublicData: withPublicData(),
+                typeFilter: typeFilter()
+            };
         });
+
+        searchInputs.subscribe(function () {
+            page(1);
+            doSearch(searchParams());
+        });
+
+        // Search paging is separated from the input parameters because the input parameters will
+        // probably change the search space, the paging and sorting inputs don't.
+        var searchPaging = ko.pureComputed(function () {
+            return {
+                page: page(),
+                pageSize: pageSize(),
+                sortingRules: sortingRules()
+            };
+        });
+
+        searchPaging.subscribe(function () {
+            doSearch(searchParams());
+        });
+
+       
+
+       
 
         function refreshSearch() {
             doSearch(searchParams());

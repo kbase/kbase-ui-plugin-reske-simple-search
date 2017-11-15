@@ -9,6 +9,8 @@ define([
     serviceUtils,
     Cacher
 ) {
+    var userCache = Cacher();
+    
     function factory(config) {
         var runtime = config.runtime;
 
@@ -17,8 +19,6 @@ define([
             module: 'UserProfile',
             token: runtime.service('session').getAuthToken()
         });
-
-        var userCache = Cacher();
 
         function userQuery(userIds) {
             var resultsMap = {};
@@ -47,7 +47,7 @@ define([
                         
                         // TODO: resolve this - duplicates appearing.
                         if (userCache.has(userId)) {
-                            console.warn('Duplicate object detected: ' + ref);
+                            console.warn('Duplicate object detected: ' + userId);
                         } else {
                             userCache.add(userId, userProfile);
                         }
