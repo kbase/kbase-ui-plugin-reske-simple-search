@@ -191,30 +191,29 @@ define([
             if (resizerTimer) {
                 return;
             }
-            window.setTimeout(function () {
+            resizerTimer = window.setTimeout(function () {
                 resizerTimer = null;
                 height(calcHeight());
             }, resizerTimeout);
         }
-        window.addEventListener('resize', resizer, false);
+        var resizeListener = window.addEventListener('resize', resizer, false);
 
+        // TODO: bind this to the table styles
         var rowHeight = 35;
 
         height.subscribe(function (newValue) {
             if (!newValue) {
                 table.pageSize(null);
             }            
-            var rows = Math.floor(newValue / rowHeight);
-            table.pageSize(rows);
+
+            
+            var rowCount = Math.floor(newValue / rowHeight);
+
+            table.pageSize(rowCount);
         });        
 
         // Calculate the height immediately upon component load
         height(calcHeight());
-
-        // table.rows.subscribe(function () {
-        //     // console.log('table rows??', table.rows());
-            
-        // });
 
         function doOpenUrl(data) {
             if (!data.url) {
@@ -231,6 +230,14 @@ define([
                 console.warn('No row action...', table, data);
             }
         }
+
+        // LIFECYCLE
+
+        function dispose() {
+            if (resizeListener) {
+                window.removeEventListener('resize', resizer, false);
+            }
+        }
         
         return {
             rows: table.rows,
@@ -241,7 +248,9 @@ define([
             sortDirection: sortDirection,
             state: table.state,
             doOpenUrl: doOpenUrl,
-            doRowAction: doRowAction
+            doRowAction: doRowAction,
+            // lifecycle hooks
+            dispose: dispose
         };
     }
 
