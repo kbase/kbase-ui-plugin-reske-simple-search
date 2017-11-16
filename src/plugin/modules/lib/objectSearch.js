@@ -761,7 +761,7 @@ define([
                 } else {
                     ownerName = object.ownerProfile.user.realname;
                 }
-
+                
                 object.simpleBrowse = {
                     narrativeTitle: {
                         value: object.context.narrativeTitle || '-',

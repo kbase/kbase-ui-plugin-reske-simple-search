@@ -405,7 +405,7 @@ define([
             css: {
                 flex: '1 1 0px',
                 display: 'flex',
-                'flex-direction': 'column'
+                flexDirection: 'column'
             }
         },
         controls: {

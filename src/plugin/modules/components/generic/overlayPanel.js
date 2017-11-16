@@ -19,7 +19,6 @@ define([
         div = t('div');
 
     function viewModel(params) {
-        console.log('in overlay panel...', params);
         var hostVm = params.hostVm;
 
         var showPanel = ko.observable();
@@ -29,7 +28,6 @@ define([
         }
 
         params.component.subscribe(function (newValue) {
-            console.log('new component loaded...', newValue);
             if (newValue) {
                 showPanel(true);
             } else {
