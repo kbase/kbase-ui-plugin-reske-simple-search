@@ -47,7 +47,8 @@ define([
             css: {
                 flex: '1 1 0px',
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                position: 'relative'
             }
         },
         itemRow: {
@@ -139,6 +140,8 @@ define([
     });
 
     function viewModel(params, componentInfo) {
+        var slowLoadingThreshold = 300;
+        
         var table = params.table;
         var columns = table.columns;
         // calculate widths...
@@ -238,10 +241,38 @@ define([
                 window.removeEventListener('resize', resizer, false);
             }
         }
+
+        var isLoadingSlowly = ko.observable(false);
+
+        var loadingTimer;
+        function timeLoading() {
+            loadingTimer = window.setTimeout(function () {
+                if (table.isLoading()) {
+                    isLoadingSlowly(true);
+                }
+                loadingTimer = null;
+            }, slowLoadingThreshold);
+        }
+        function cancelTimeLoading() {
+            if (loadingTimer) {
+                window.clearTimeout(loadingTimer);
+                loadingTimer = null;
+            }
+            isLoadingSlowly(false);
+        }
+        
+        table.isLoading.subscribe(function (loading) {
+            if (loading) {
+                timeLoading();
+            } else {
+                cancelTimeLoading();
+            }
+        });
         
         return {
             rows: table.rows,
             isLoading: table.isLoading,
+            isLoadingSlowly: isLoadingSlowly,
             columns: columns,
             doSort: doSort,
             sortColumn: sortColumn,
@@ -380,7 +411,7 @@ define([
                 }
             },
             class: styles.classes.itemRows
-        }, [
+        }, [            
             div({
                 dataBind: {
                     foreach: {
@@ -519,20 +550,40 @@ define([
         ]);
     }
 
-    // function buildLoading() {
-    //     // return tbody({}, [
-    //     //     tr([
-    //     //         td({
-    //     //             dataBind: {
-    //     //                 attr: {
-    //     //                     colspan: 'columns.length'
-    //     //                 }
-    //     //             }
-    //     //         }, html.loading())
-    //     //     ])
-    //     // ]);
-    //     return html.loading();
-    // }
+    function buildLoading() {
+        return [
+            '<!-- ko if: $component.isLoading -->',
+            div({
+                style: {
+                    position: 'absolute',
+                    left: '0',
+                    right: '0',
+                    top: '0',
+                    bottom: '0',
+                    backgroundColor: 'rgba(255, 255, 255, 0.5)',                    
+                    fontSize: '300%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    zIndex: '5'
+                }
+            }, [
+                div({
+                    style: {
+                        flex: '1 1 0px',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }
+                }, [
+                    '<!-- ko if: $component.isLoadingSlowly -->',
+                    html.loading(),
+                    '<!-- /ko -->'
+                ])
+            ]),
+            '<!-- /ko -->'
+        ];
+    }
 
     // function buildError() {
     //     return div({}, [
@@ -604,15 +655,23 @@ define([
                 '<!-- /ko -->',
 
                 // Handle case of a search being processed
-                // '<!-- ko if: $component.isLoading() -->',
-                // buildLoading(),
-                // '<!-- /ko -->',
 
                 '<!-- ko case: $default -->',
-                
-                '<!-- ko if: $component.rows().length > 0 -->',
-                buildResultsRows(),
-                '<!-- /ko -->',
+
+                // buildLoading(),
+                div({
+                    style: {
+                        flex: '1 1 0px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        position: 'relative'
+                    }
+                }, [
+                    buildLoading(),
+                    '<!-- ko if: $component.rows().length > 0 -->',
+                    buildResultsRows(),
+                    '<!-- /ko -->',
+                ]),
 
                 '<!-- /ko -->',
 
