@@ -711,6 +711,7 @@ define([
                     object.context = {
                         type: 'narrative',
                         narrativeTitle: narrativeTitle,
+                        // narrativeLabel: narrativeTitle + ' (' + object.currentObjectInfo.version + ')',
                         narrativeId: narrativeId,
                         narrativeUrl: narrativeUrl
                     };
@@ -764,9 +765,13 @@ define([
                 
                 object.simpleBrowse = {
                     narrativeTitle: {
-                        value: object.context.narrativeTitle || '-',
+                        value: object.context.narrativeTitle,
                         info: 'The narrative',
                         url: object.context.narrativeUrl
+                    },
+                    objectVersion: {
+                        value: object.currentObjectInfo.version,
+                        info: 'The version of the object (# of times saved)'                        
                     },
                     objectName: {
                         value: objectName || '-',

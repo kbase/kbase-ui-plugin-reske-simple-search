@@ -315,6 +315,13 @@ define([
                 }
             },
             {
+                name: 'objectVersion',
+                label: 'Ver',
+                type: 'number',
+                format: '0,0',
+                width: 5
+            },
+            {
                 name: 'type',
                 label: 'Type',
                 type: 'string',
@@ -342,8 +349,8 @@ define([
                     keyName: 'date',
                     isTimestamp: true,
                     isObject: false,
-                    direction: ko.observable('ascending'),
-                    active: ko.observable(false)
+                    direction: ko.observable('descending'),
+                    active: ko.observable(true)
                 },
                 width: 10
             },
