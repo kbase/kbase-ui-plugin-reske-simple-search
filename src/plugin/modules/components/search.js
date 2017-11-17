@@ -47,6 +47,9 @@ define([
             });
         }
 
+        // just parked here for now until supported in RESKE
+        var withSharedData = ko.observable(true);
+
         return {
             // The top level search is included so that it can be
             // propagated.
@@ -58,6 +61,8 @@ define([
             searching: searching,
             pageSize: pageSize,
             page: page,
+
+            withSharedData: withSharedData,
 
             // ACTIONS
             doHelp: doHelp,
@@ -116,10 +121,22 @@ define([
                 },
                 dataBind: {
                     textInput: 'searchInput',
-                    hasFocus: true
+                    hasFocus: true,
+                    css: 'searchInput() ? "' + styles.classes.activeFilterInput + '" : null',
                 },
                 placeholder: 'Search KBase Data'
             }),
+            div({
+                class: 'input-group-addon',
+                style: {
+                    cursor: 'pointer'
+                },
+                // dataBind: {
+                //     click: 'doHelp'
+                // }
+            }, span({
+                class: 'fa fa-history'
+            })),
             div({
                 class: 'input-group-addon',
                 style: {
@@ -143,10 +160,14 @@ define([
             }
         }, [
             // 'Search in ',
-            label('Ownership: '),
+            label('Ownership '),
             span({
-                // class: 'checkbox'
+                dataBind: {
+                    css: '$component.search.withPrivateData() ? "' + styles.classes.activeFilterInput + '" : null'
+                },
+                class: ['form-control', styles.classes.checkboxControl]               
             }, label({
+                
                 style: {
                     fontWeight: 'normal',
                     marginRight: '4px',
@@ -162,7 +183,10 @@ define([
                 ' Own Data'
             ])),
             span({
-                // class: 'checkbox'
+                dataBind: {
+                    css: '$component.withSharedData() ? "' + styles.classes.activeFilterInput + '" : null'
+                },
+                class: ['form-control', styles.classes.checkboxControl]    
             }, label({
                 style: {
                     fontWeight: 'normal',
@@ -172,14 +196,17 @@ define([
             }, [
                 input({
                     type: 'checkbox',
-                    // dataBind: {
-                    //     checked: '$component.search.withPrivateData'
-                    // }
+                    dataBind: {
+                        checked: '$component.withSharedData'
+                    }
                 }),
                 ' Shared with you'
             ])),
             span({
-                // class: 'ckeckbox'
+                dataBind: {
+                    css: '$component.search.withPublicData() ? "' + styles.classes.activeFilterInput + '" : null'
+                },
+                class: ['form-control', styles.classes.checkboxControl]    
             }, label({
                 style: {
                     fontWeight: 'normal',
@@ -249,6 +276,16 @@ define([
             // border: '1px green dotted',
             display: 'flex',
             flexDirection: 'column'
+        },
+        activeFilterInput: {
+            // fontFamily: 'monospace',
+            backgroundColor: 'rgba(209, 226, 255, 1)',
+            color: '#000'
+        },
+        checkboxControl: {
+            borderColor: 'transparent',
+            boxShadow: 'none',
+            margin: '0 2px'
         }
     });
 

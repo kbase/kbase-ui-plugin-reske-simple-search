@@ -337,7 +337,7 @@ define([
                 name: 'date',
                 label: 'Date',
                 type: 'date',
-                format: 'MM/DD/YYYY',
+                format: 'nice-elapsed',
                 sort: {
                     keyName: 'date',
                     isTimestamp: true,
@@ -345,7 +345,7 @@ define([
                     direction: ko.observable('ascending'),
                     active: ko.observable(false)
                 },
-                width: 8
+                width: 10
             },
             {
                 name: 'owner',

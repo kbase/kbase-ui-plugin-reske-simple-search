@@ -585,34 +585,28 @@ define([
         ];
     }
 
-    // function buildError() {
-    //     return div({}, [
-    //         BS.buildPanel({
-    //             title: 'Error',
-    //             type: 'danger',
-    //             classes: ['kb-panel-light'],
-    //             body: div([
-    //                 p('There was an error fetching the data for this search results page:'),
-    //                 p({
-    //                     dataBind: {
-    //                         text: 'search.error'
-    //                     }
-    //                 }),
-    //                 p('You may continue to browse through search results.')
-    //             ])
-    //         })
-    //     ]);
-    // }
-
     function buildNoActiveSearch() {
         return div([
-            p('NO ACTIVE SEARCH - PLACEHOLDER')
+            '<!-- ko if: $component.isLoading -->',
+            p('Running your search! Going from Zero to Hero ... ' + html.loading()),
+            '<!-- /ko -->',
+
+            '<!-- ko ifnot: $component.isLoading -->',
+            p('NO ACTIVE SEARCH - PLACEHOLDER'),
+            '<!-- /ko -->'
         ]);
     }
 
     function buildNoResults() {
         return div([
-            p('NO RESULTS FROM SEARCH - PLACEHOLDER')
+            '<!-- ko if: $component.isLoading -->',
+            p('Running your search! Going from Zero to Hero ... ' + html.loading()),
+            '<!-- /ko -->',
+
+            '<!-- ko ifnot: $component.isLoading -->',
+            p('NO RESULTS FROM SEARCH - PLACEHOLDER'),
+            '<!-- /ko -->'
+           
         ]);
     }
 
@@ -658,7 +652,6 @@ define([
 
                 '<!-- ko case: $default -->',
 
-                // buildLoading(),
                 div({
                     style: {
                         flex: '1 1 0px',

@@ -308,7 +308,8 @@ define([
                         '<!-- ko if: actualTotalCount() > totalCount() -->',
                         span({
                             style: {
-                                fontStyle: 'italic'
+                                fontStyle: 'italic',
+                                color: 'brown'
                             }
                         }, [
                             ' (truncated from ',

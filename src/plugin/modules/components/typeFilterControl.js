@@ -13,6 +13,14 @@ define([
         div = t('div'),
         label = t('label');
 
+    var styles = html.makeStyles({
+        activeFilterInput: {
+            // fontFamily: 'monospace',
+            backgroundColor: 'rgba(209, 226, 255, 1)',
+            color: '#000'
+        }
+    });
+
     function viewModel(params) {
         var typeFilterOptions = params.search.typeFilterOptions.map(function (option) {
             return option;
@@ -35,10 +43,21 @@ define([
             params.search.typeFilter([data.typeFilterInput()]);
         }
 
+        var typeFilter = params.search.typeFilter;
+
+        var optionSelected = ko.pureComputed(function () {
+            if (typeFilter() && typeFilter().length > 0) {
+                // $component.typeFilter()[0] !== "_select_"
+                return true;
+            }
+            return false;
+        });
+
         return {
             search: params.search,
             // Type filter
-            typeFilter: params.search.typeFilter,
+            optionSelected: optionSelected,
+            typeFilter: typeFilter,
             typeFilterInput: ko.observable('_select_'),
             typeFilterOptions: typeFilterOptions,
             doRemoveTypeFilter: doRemoveTypeFilter,
@@ -53,14 +72,16 @@ define([
                 margin: '0 4px'
             }
         }, [
-            label('Type: '),
+            styles.sheet,
+            label(' '),
             select({
                 dataBind: {
                     value: 'typeFilterInput',
                     event: {
                         change: '$component.doSelectTypeFilter'
                     },
-                    foreach: 'typeFilterOptions'
+                    foreach: 'typeFilterOptions',
+                    css: 'optionSelected() ? "' + styles.classes.activeFilterInput + '" : null'
                 },
                 class: 'form-control',
                 style: {
