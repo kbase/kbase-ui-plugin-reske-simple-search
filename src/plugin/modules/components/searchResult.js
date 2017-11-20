@@ -59,12 +59,7 @@ define([
                 column.sort.direction('ascending');
             }
            
-            search.sortBy({
-                isTimestamp: column.sort.isTimestamp  || false,
-                isObjectName: column.sort.isObjectName || false,
-                keyName: column.sort.keyName,
-                direction: column.sort.direction()
-            });
+            search.sortBy(column.sort);
         }
 
         sortBy(columns[3]);

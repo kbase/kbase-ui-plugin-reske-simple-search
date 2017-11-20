@@ -55,19 +55,24 @@ define([
         var typeFilter = ko.observableArray();
         var typeFilterOptions = [{
             label: 'Narrative',
-            value: 'narrative'
+            value: 'narrative',
+            count: ko.observable()
         }, {
             label: 'Genome',
-            value: 'genome'
+            value: 'genome',
+            count: ko.observable()
         }, {
             label: 'Assembly',
-            value: 'assembly'
+            value: 'assembly',
+            count: ko.observable()
         }, {
             label: 'Paired-End Read',
-            value: 'pairedendlibrary'
+            value: 'pairedendlibrary',
+            count: ko.observable()
         }, {
             label: 'Single-End Read',
-            value: 'singleendlibrary'
+            value: 'singleendlibrary',
+            count: ko.observable()
         }].map(function (item) {
             item.enabled = ko.pureComputed(function () {
                 return typeFilter().indexOf(item.value) === -1;
@@ -126,29 +131,72 @@ define([
 
         });
 
+        var searchStack = [];
+        var searchMap = {};
         function doSearch(params) {
+            var searchId;
+            // console.log('doSearch', searchStack,length, Object.keys(searchMap).length);
             Promise.try(function () {
                 searching(true);
             })
                 .then(function () {
-                    return objectSearch.executeSearch({
-                        pageSize: params.pageSize,
-                        page: params.page,
-                        query: params.query,
-                        withPrivateData: params.withPrivateData,
-                        withPublicData: params.withPublicData,
-                        typeFilter: params.typeFilter,
-                        sortingRules: params.sortingRules,
+                    // Head off an empty query at the pass.
+                    // This may happen due to changes in search parameters when
+                    // there isn't an active search.
+                    // TODO: more graceful way of handling this; 
+                    if (!params.query) {
+                        return;
+                    }
+                    // Ignore an identitical search. This can happen, although it
+                    // shouldn't with churn in ...
+                    // console.log('searching with...', params);
+                    if (searchStack.length) {
+                        var lastSearchId = searchStack[searchStack.length-1];
+                        var lastSearch = searchMap[lastSearchId];
+                        if (utils.isEqual(params, lastSearch.params)) {
+                            console.warn('skipping search - identical to previous pending');
+                            return;
+                        }
+                    }
 
-                        status: status,
-                        // searchExpression: searchExpression,
-                        message: message,
-                        searchTotal: searchTotal,
-                        actualSearchTotal: actualSearchTotal,
-                        searchResults: searchResults
-                    });
-                })
-                .catch(function (err) {
+                    searchId = html.genId();
+                    searchMap[searchId] = {
+                        params: params                    
+                    };
+                    searchStack.push(searchId);
+                    
+                    return Promise.all([
+                        objectSearch.executeSearch({
+                            pageSize: params.pageSize,
+                            page: params.page,
+                            query: params.query,
+                            withPrivateData: params.withPrivateData,
+                            withPublicData: params.withPublicData,
+                            typeFilter: params.typeFilter,
+                            sortingRules: params.sortingRules,
+
+                            status: status,
+                            // searchExpression: searchExpression,
+                            message: message,
+                            searchTotal: searchTotal,
+                            actualSearchTotal: actualSearchTotal,
+                            searchResults: searchResults
+                        }),
+                        objectSearch.searchAllTypes({
+                            query: params.query,
+                            withPrivateData: params.withPrivateData,
+                            withPublicData: params.withPublicData
+                        })
+                    ])
+                        .spread(function (results, summary) {
+                        // TODO: process the results here rather than inside executeSearch!
+                            typeFilterOptions.forEach(function (option) {
+                                option.count(summary.typeToCount[option.value]);
+                            });                        
+                        });
+                })               
+                .catch(function (err) {   
+                    console.error('ERROR', err);                
                     if (err instanceof utils.ReskeSearchError) {
                         error({
                             code: err.code,
@@ -184,9 +232,18 @@ define([
                 })
                 .finally(function () {
                     searching(false);
+                    if (searchId) {
+                        if (searchMap[searchId]) {
+                            delete searchMap[searchId];
+                            searchStack = searchStack.filter(function (id) {
+                                return (id !== searchId);
+                            });
+                        } else {
+                            console.error('search id not found!', searchId, searchStack);
+                        }
+                    }
                 });
         }
-
 
         var sortingRules = ko.observableArray();
         function sortBy(sortSpec) {
@@ -194,7 +251,7 @@ define([
                 is_timestamp: sortSpec.isTimestamp ? 1 : 0,
                 is_object_name: sortSpec.isObjectName ? 1 : 0,
                 key_name: sortSpec.keyName,
-                descending: sortSpec.direction === 'descending' ? 1 : 0
+                descending: sortSpec.direction() === 'descending' ? 1 : 0
             };
             sortingRules.removeAll();
             sortingRules.push(sortRule);
@@ -256,10 +313,6 @@ define([
             doSearch(searchParams());
         });
 
-       
-
-       
-
         function refreshSearch() {
             doSearch(searchParams());
         }
@@ -315,6 +368,13 @@ define([
                 }
             },
             {
+                name: 'objectVersion',
+                label: 'Ver',
+                type: 'number',
+                format: '0,0',
+                width: 5
+            },
+            {
                 name: 'type',
                 label: 'Type',
                 type: 'string',
@@ -342,8 +402,8 @@ define([
                     keyName: 'date',
                     isTimestamp: true,
                     isObject: false,
-                    direction: ko.observable('ascending'),
-                    active: ko.observable(false)
+                    direction: ko.observable('descending'),
+                    active: ko.observable(true)
                 },
                 width: 10
             },
@@ -370,6 +430,13 @@ define([
                 }
             }           
         ];
+
+        // ensure that the initial sorting rules reflect the initial column configuration.
+        columns.forEach(function (column) {
+            if (column.sort && column.sort.active()) {
+                sortBy(column.sort);
+            }
+        });
 
         var vm = {
             search: {
