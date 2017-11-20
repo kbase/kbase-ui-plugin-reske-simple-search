@@ -15,6 +15,7 @@ define([
 
     var t = html.tag,
         div = t('div'),
+        p = t('p'),
         span = t('span'),
         input = t('input'),
         label = t('label');
@@ -32,7 +33,7 @@ define([
     function viewModel(params) {
 
         // Unpack the Search VM.
-        var searchInput = params.search.searchInput;
+        // var searchInput = params.search.searchInput;
         var searchResults = params.search.searchResults;
         var searchTotal = params.search.searchTotal;
         var searching = params.search.searching;
@@ -47,15 +48,104 @@ define([
             });
         }
 
+       
+        // don't automatically sync; only sync on pressing the 
+        // search refresh button or with enter key.
+
+        // .syncWith(params.search.searchInput);
+
         // just parked here for now until supported in RESKE
         var withSharedData = ko.observable(true);
+
+        var showHistory = ko.observable(false);
+
+        var searchHistory = ko.observableArray();
+
+        // function addToHistory(data) {
+        //     history.push(searchInput());
+        // }
+
+        // This is the obervable in the actual search input.
+        var searchControlValue = ko.observable();
+
+        // This is the search value the user has commited by clicking
+        // the search button or pressing the Enter key.
+        var searchInput = ko.observable();
+
+        function addToSearchHistory(value) {
+            if (searchHistory.indexOf(value) !== -1) {
+                return;
+            }
+            
+            searchHistory.push(value);
+
+            if (searchHistory().length > 10) {
+                searchHistory.shift();
+            }
+        }
+
+
+        // When it is updated by either of those methods, we save
+        // it in the search history, and also forward the value to
+        // the search query.
+        searchInput.subscribe(function (newValue) {
+            // add to history if not already there...
+            addToSearchHistory(newValue);
+            params.search.searchInput(newValue);
+        });
+
+        function useFromHistory(data) {
+            searchControlValue(data);
+            // TODO: way for this to actually flow from the 
+            // control after the searchInput is updated?
+            searchInput(data);
+            showHistory(false);
+        }
+
+        // function removeFromHistory(data) {
+
+        // }
+
+        function doToggleHistory() {
+            showHistory(!showHistory());
+        }
+
+        var searchInputClass = ko.pureComputed(function () {
+            if (searchControlValue() !== searchInput()) {
+                return styles.classes.modifiedFilterInput;
+            }
+
+            if (searchInput()) {
+                return styles.classes.activeFilterInput;
+            }
+
+            return null;
+        });
+
+        function doRunSearch() {
+            searchInput(searchControlValue());
+
+            // params.search.refreshSearch();
+        }
+
+        function doKeyUp(data, ev) {
+            if (ev.key) {
+                if (ev.key === 'Enter') {
+                    doRunSearch();
+                }
+            } else if (ev.keyCode) {
+                if (ev.keyCode === 13) {
+                    doRunSearch();
+                }
+            }
+        }
 
         return {
             // The top level search is included so that it can be
             // propagated.
             search: params.search,
             // And we break out fields here for more natural usage (or not??)
-            searchInput: searchInput,
+            searchControlValue: searchControlValue,
             searchResults: searchResults,
             searchTotal: searchTotal,
             searching: searching,
@@ -63,10 +153,17 @@ define([
             page: page,
 
             withSharedData: withSharedData,
+            showHistory: showHistory,
+            doToggleHistory: doToggleHistory,
+
+            useFromHistory: useFromHistory,
+            searchHistory: searchHistory,
+            searchInputClass: searchInputClass,
 
             // ACTIONS
             doHelp: doHelp,
-            doRefreshSearch: params.search.refreshSearch,
+            doRunSearch: doRunSearch,
+            doKeyUp: doKeyUp
         };
     }
 
@@ -90,7 +187,7 @@ define([
                     paddingRight: '8px'
                 },
                 dataBind: {
-                    click: 'doRefreshSearch'
+                    click: 'doRunSearch'
                 }
             }, span({
                 style: {
@@ -115,25 +212,67 @@ define([
                     }
                 }
             }))),
-            input({
+            div({
                 class: 'form-control',
                 style: {
-                },
-                dataBind: {
-                    textInput: 'searchInput',
-                    hasFocus: true,
-                    css: 'searchInput() ? "' + styles.classes.activeFilterInput + '" : null',
-                },
-                placeholder: 'Search KBase Data'
-            }),
+                    display: 'inline-block',
+                    width: '100%',
+                    position: 'relative',
+                    padding: '0',
+                    border: 'none'
+                }
+            }, [
+                input({
+                    class: 'form-control',                   
+                    dataBind: {
+                        textInput: 'searchControlValue',
+                        // value: 'searchInput',
+                        hasFocus: true,
+                        // css: 'searchInput() ? "' + styles.classes.activeFilterInput + '" : null',
+                        css: 'searchInputClass',
+                        event: {
+                            keyup: 'doKeyUp'
+                        }
+                    },
+                    placeholder: 'Search KBase Data'
+                }),
+                '<!-- ko if: showHistory -->',
+                div({
+                    
+                    class: styles.classes.historyContainer
+                }, [
+                    '<!-- ko if: searchHistory().length > 0 -->',
+                    '<!-- ko foreach: searchHistory -->',                    
+                    div({
+                        dataBind: {
+                            text: '$data',
+                            click: '$component.useFromHistory'
+                        },
+                        class: styles.classes.historyItem
+                    }),
+                    '<!-- /ko -->',
+                    '<!-- /ko -->',
+                    '<!-- ko ifnot: searchHistory().length > 0 -->',
+                    p({
+                        style: {
+                            fontStyle: 'italic'
+                        }
+                    }, 'no items in history yet - Search!'),
+                    '<!-- /ko -->',
+                ]),
+                '<!-- /ko -->'
+            ]),
             div({
                 class: 'input-group-addon',
                 style: {
                     cursor: 'pointer'
                 },
-                // dataBind: {
-                //     click: 'doHelp'
-                // }
+                dataBind: {
+                    click: 'doToggleHistory',
+                    style: {
+                        'background-color': 'showHistory() ? "silver" : null'
+                    }
+                }
             }, span({
                 class: 'fa fa-history'
             })),
@@ -233,17 +372,21 @@ define([
             }
         }, [
             buildSearchFilters(),
+            
             div({
                 style: {
                     display: 'inline-block',
                     marginLeft: '12px'
                 }
-            }, utils.komponent({
-                name: 'reske-simple-search/type-filter-control',
-                params: {
-                    search: 'search'
-                }
-            }))
+            }, [
+                label('Type '),
+                utils.komponent({
+                    name: 'reske-simple-search/type-filter-control',
+                    params: {
+                        search: 'search'
+                    }
+                })
+            ])
         ]);
     }
 
@@ -282,10 +425,35 @@ define([
             backgroundColor: 'rgba(209, 226, 255, 1)',
             color: '#000'
         },
+        modifiedFilterInput: {
+            // fontFamily: 'monospace',
+            backgroundColor: 'rgba(255, 245, 158, 1)',
+            color: '#000'
+        },
         checkboxControl: {
             borderColor: 'transparent',
             boxShadow: 'none',
             margin: '0 2px'
+        },
+        historyContainer: {
+            display: 'block',
+            position: 'absolute',
+            border: '1px silver solid',
+            backgroundColor: 'rgba(255,255,255,0.9)',
+            zIndex: '3',
+            top: '100%',
+            left: '0',
+            right: '0'
+        },
+        historyItem: {
+            css: {
+                padding: '3px'
+            },
+            pseudo: {
+                hover: {
+                    backgroundColor: 'silver'
+                }
+            }
         }
     });
 

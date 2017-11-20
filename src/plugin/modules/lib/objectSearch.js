@@ -802,9 +802,64 @@ define([
             return searchResult;
         }
 
+        var typesToShow = ['narrative', 'genome', 'assembly', 'pairedendlibrary', 'singleendlibrary'];
+        
+        function searchAllTypes(arg) {
+            var query = arg.query;
+            var withPublic = arg.withPublicData;
+            var withPrivate = arg.withPrivateData;
+            // var client = new GenericClient({
+            //     url: runtime.config('services.reske.url'),
+            //     module: 'KBaseRelationEngine',
+            //     token: runtime.service('session').getAuthToken()
+            // })
+            if (query === '*') {
+                query = null;
+            }
+            var param = self.searchTypesInput = {
+                match_filter: {
+                    full_text_in_all: query || null
+                },
+                access_filter: {
+                    with_private: withPrivate ? 1 : 0,
+                    with_public: withPublic ? 1 : 0
+                }
+            };
+
+            return rpc.call('KBaseRelationEngine', 'search_types', [param])
+            // return client.callFunc('search_types', [param])
+                .then(function (result) {
+                    var searchResult = result[0];
+                    var typeToCount = {};
+                    var hits = Types.types
+                        .filter(function (type) {
+                            return (typesToShow.indexOf(type.id) >= 0);
+                        })
+                        .map(function (type) {
+                            // what a mess -- this is what the call returns -- essentially
+                            // a camel-cased version of the index, which we have in the types
+                            // module as "kbaseTypeId" since that is what it seems to be, no
+                            // accident.
+                            typeToCount[type.id] = searchResult.type_to_count[type.resultId] || 0;
+                            var hitCount = searchResult.type_to_count[type.resultId] || 0;
+                            return {
+                                type: type.id,
+                                title: type.label,
+                                hitCount: hitCount
+                            };
+                        });
+                    return {
+                        hits: hits,
+                        typeToCount: typeToCount,
+                        elapsed: searchResult.search_time
+                    };
+                });
+        }
+
         return {
             executeSearch: executeSearch,
-            slatherFromWorkspace: slatherFromWorkspace
+            slatherFromWorkspace: slatherFromWorkspace,
+            searchAllTypes: searchAllTypes
         };
     }
 

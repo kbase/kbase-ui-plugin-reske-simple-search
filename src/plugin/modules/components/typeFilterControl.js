@@ -28,6 +28,7 @@ define([
         typeFilterOptions.unshift({
             label: 'All Types',
             value: '_select_',
+            count: params.search.searchTotal,
             enabled: true
         });
 
@@ -90,8 +91,8 @@ define([
             }, [
                 option({
                     dataBind: {
-                        value: 'value',
-                        text: 'label',
+                        value: 'value ',
+                        text: 'count() !== undefined ? (label + " - " + count()) : label',
                         attr: {
                             selected: 'value === $component.typeFilter()[0]'
                         }
