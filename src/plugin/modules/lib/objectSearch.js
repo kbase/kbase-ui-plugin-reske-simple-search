@@ -842,7 +842,7 @@ define([
                     },
                     type: {
                         value: object.type.kbaseTypeId,
-                        info: 'This is an object of type ' + object.type
+                        info: 'This is an object of type ' + object.type.kbaseTypeId
                     },
                     date: {
                         value: object.timestamp,
