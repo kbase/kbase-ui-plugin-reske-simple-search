@@ -26,15 +26,18 @@ define([
             flex: '1 1 0px',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'flex-start'
+            justifyContent: 'flex-start',
+            minWidth: '40em'
         },
         headerRow: {
             flex: '0 0 35px',
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            backgroundColor: 'gray',
-            color: 'white'
+            // backgroundColor: 'gray',
+            // color: 'white'
+            fontWeight: 'bold',
+            color: 'gray'
         },
         tableBody: {
             css: {
@@ -84,9 +87,10 @@ define([
             flex: '0 0 0px',
             overflow: 'hidden',
             whiteSpace: 'nowrap',
-            border: '1px silver solid',
+            // border: '1px silver solid',
+            borderBottom: '1px #DDD solid',
             height: '35px',
-            padding: '2px',
+            padding: '2px 4px',
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center'
@@ -95,7 +99,9 @@ define([
             flex: '0 0 0px',
             overflow: 'hidden',
             whiteSpace: 'nowrap',
-            border: '1px silver solid',
+            // border: '1px silver solid',
+            borderTop: '1px #DDD solid',
+            borderBottom: '1px #DDD solid',
             height: '35px',
             padding: '2px',
             textAlign: 'left',
@@ -268,6 +274,13 @@ define([
                 cancelTimeLoading();
             }
         });
+
+        function openLink(url) {
+            // console.log('open link?', cell, row);
+            if (url) {
+                window.open(url, '_blank');
+            }
+        }
         
         return {
             rows: table.rows,
@@ -281,7 +294,8 @@ define([
             doOpenUrl: doOpenUrl,
             doRowAction: doRowAction,
             // lifecycle hooks
-            dispose: dispose
+            dispose: dispose,
+            openLink: openLink
         };
     }
 
@@ -304,6 +318,17 @@ define([
                 class: [styles.classes.innerCell]
             }, [
                 '<!-- ko if: column.sort -->',
+
+                span({
+                    dataBind: {
+                        text: 'column.label',
+                        click: 'function () {$component.doSort(column);}'
+                    },
+                    style: {
+                        cursor: 'pointer',
+                        marginRight: '2px'
+                    },
+                }),
                 
                 '<!-- ko if: !column.sort.active() -->',
                 span({
@@ -323,17 +348,9 @@ define([
                 '<!-- /ko -->',
                 '<!-- /ko -->',
 
-                span({
-                    dataBind: {
-                        text: 'column.label',
-                        click: 'function () {$component.doSort(column);}'
-                    },
-                    style: {
-                        cursor: 'pointer',
-                        marginLeft: '2px'
-                    },
-                }),
+                
                 '<!-- /ko -->',
+
                 '<!-- ko if: !column.sort -->',
                 span({
                     dataBind: {
@@ -401,6 +418,150 @@ define([
         ];
     }
 
+    function  buildActionFnCol() {
+        return [
+            '<!-- ko if: row[column.name] -->',
+            a({
+                dataBind: {
+                    typedText: {
+                        value: 'row[column.name].value',
+                        type: 'column.type',
+                        format: 'column.format'
+                    },
+                    click: 'function () {column.action.fn(row[column.name], row);}',
+                    clickBubble: false,
+                    attr: {
+                        title: 'row[column.name].info'
+                    }
+                },
+                style: {
+                    cursor: 'pointer'
+                }
+            }),
+            '<!-- /ko -->',
+
+            // NO column value, show the column action label or icon
+            '<!-- ko ifnot: row[column.name] -->',
+
+
+            '<!-- ko if: column.action.label -->',
+            a({
+                dataBind: {
+                    text: 'column.action.label',
+                    // click: 'function () {column.action(row);}',
+                    // clickBubble: false
+                },
+                style: {
+                    cursor: 'pointer'
+                }
+            }),
+            '<!-- /ko -->',
+
+            '<!-- ko ifnot: column.action.label -->',
+            a({
+                dataBind: {
+                    css: 'column.action.icon',
+                    click: 'function () {column.action.fn(row);}',
+                    clickBubble: false,
+                    // attr: {
+                    //     title: 'row[column.name].info'
+                    // }
+                },
+                style: {
+                    cursor: 'pointer'
+                },
+                class: 'fa'
+            }),
+            '<!-- /ko -->',
+
+            '<!-- /ko -->'
+        ];
+    }
+
+    function  buildActionLinkCol() {
+        return [
+            '<!-- ko if: row[column.name] -->',
+
+            '<!-- ko if: row[column.name].url -->',
+            a({
+                dataBind: {
+                    typedText: {
+                        value: 'row[column.name].value',
+                        type: 'column.type',
+                        format: 'column.format'
+                    },
+                    click: 'function () {$component.openLink(row[column.name].url);}',
+                    // click: 'function () {column.action.fn(row[column.name], row);}',
+                    clickBubble: false,
+                    attr: {
+                        title: 'row[column.name].info'
+                    }
+                },
+                style: {
+                    cursor: 'pointer'
+                }
+            }),
+            '<!-- /ko -->',
+
+            '<!-- ko ifnot: row[column.name].url -->',
+            span({
+                dataBind: {
+                    typedText: {
+                        value: 'row[column.name].value',
+                        type: 'column.type',
+                        format: 'column.format'
+                    },
+                    attr: {
+                        title: 'row[column.name].info'
+                    }
+                }
+            }),
+            '<!-- /ko -->',
+
+
+            '<!-- /ko -->',
+
+            // Case of a column definition containing a link, but no corresponding
+            // row value. E.g. a per-row action.
+
+            // NO column value, show the column action label or icon
+            '<!-- ko ifnot: row[column.name] -->',
+
+
+            '<!-- ko if: column.action.label -->',
+            a({
+                dataBind: {
+                    text: 'column.action.label',
+                    // click: 'function () {column.action(row);}',
+                    // clickBubble: false
+                },
+                style: {
+                    cursor: 'pointer'
+                }
+            }),
+            '<!-- /ko -->',
+
+            '<!-- ko ifnot: column.action.label -->',
+            a({
+                dataBind: {
+                    css: 'column.action.icon',
+                    click: 'function () {$module.openLink(row[column.name], row);}',
+                    clickBubble: false,
+                    // attr: {
+                    //     title: 'row[column.name].info'
+                    // }
+                },
+                style: {
+                    cursor: 'pointer'
+                },
+                class: 'fa'
+            }),
+            '<!-- /ko -->',
+
+            '<!-- /ko -->'
+        ];
+    }
+
     function buildResultsRows() {
         var rowClass = {};
         return div({
@@ -434,60 +595,12 @@ define([
                     // ACTION COLUMN
                     '<!-- ko if: column.action -->',
 
-                    '<!-- ko if: row[column.name] -->',
-                    a({
-                        dataBind: {
-                            typedText: {
-                                value: 'row[column.name].value',
-                                type: 'column.type',
-                                format: 'column.format'
-                            },
-                            click: 'function () {column.action.fn(row[column.name], row);}',
-                            clickBubble: false,
-                            attr: {
-                                title: 'row[column.name].info'
-                            }
-                        },
-                        style: {
-                            cursor: 'pointer'
-                        }
-                    }),
+                    '<!-- ko if: column.action.fn -->',
+                    buildActionFnCol(),
                     '<!-- /ko -->',
 
-                    // NO column value, show the column action label or icon
-                    '<!-- ko ifnot: row[column.name] -->',
-
-
-                    '<!-- ko if: column.action.label -->',
-                    a({
-                        dataBind: {
-                            text: 'column.action.label',
-                            // click: 'function () {column.action(row);}',
-                            // clickBubble: false
-                        },
-                        style: {
-                            cursor: 'pointer'
-                        }
-                    }),
-                    '<!-- /ko -->',
-
-                    '<!-- ko ifnot: column.action.label -->',
-                    a({
-                        dataBind: {
-                            css: 'column.action.icon',
-                            click: 'function () {column.action.fn(row);}',
-                            clickBubble: false,
-                            // attr: {
-                            //     title: 'row[column.name].info'
-                            // }
-                        },
-                        style: {
-                            cursor: 'pointer'
-                        },
-                        class: 'fa'
-                    }),
-                    '<!-- /ko -->',
-
+                    '<!-- ko if: column.action.link -->',
+                    buildActionLinkCol(),
                     '<!-- /ko -->',
 
                     '<!-- /ko -->',

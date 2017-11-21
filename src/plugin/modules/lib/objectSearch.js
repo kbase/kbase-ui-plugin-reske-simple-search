@@ -629,7 +629,48 @@ define([
                                 // results into a map, so ...
                                 object.workspaceInfo = workspacesInfo[String(object.meta.workspace.workspaceId)];
                             });
-                        })
+
+                            // Now do the narrative object info.
+                            var narrativeRefs = {};
+                            Object.keys(workspacesInfo).forEach(function (workspaceId) {
+                                var workspaceInfo = workspacesInfo[workspaceId];
+                                if (!workspaceInfo.metadata.narrative) {
+                                    return;
+                                }
+                                var narrativeRef = [workspaceInfo.id, workspaceInfo.metadata.narrative].join('.');
+                                narrativeRefs[narrativeRef] = {
+                                    spec: {
+                                        wsid: workspaceInfo.id,
+                                        objid: parseInt(workspaceInfo.metadata.narrative)
+                                    },
+                                    ref: [workspaceInfo.id, workspaceInfo.metadata.narrative].join('/')
+                                };
+                            });
+                            var narrativeObjectSpecs = Object.keys(narrativeRefs).map(function (ref) {
+                                return narrativeRefs[ref];
+                            });
+                            // console.log('refs', narrativeRefs, narrativeObjectSpecs);
+                            return queryEngine.query({
+                                workspace: {
+                                    query: {
+                                        objectInfo: narrativeObjectSpecs
+                                    }
+                                }
+                            })
+                                .then(function (result) {
+                                    // objectinfo map, so we can look them up from the found objects
+                                    // console.log('r', result);
+                                    var m = result.workspace.objectInfo.reduce(function (accum, info) {
+                                        accum[[info.wsid, info.id].join('.')] = info;
+                                        return accum;
+                                    }, {});
+                                    // console.log('m', m);
+                                    foundObjects.forEach(function (object) {
+                                        var ref = [object.workspaceInfo.id, object.workspaceInfo.metadata.narrative].join('.');
+                                        object.narrativeInfo = m[ref];
+                                    });
+                                });
+                        })                        
                         .then(function () {
                             timer.stopTimer('get workspace and object info');
                             timer.log();
@@ -659,6 +700,9 @@ define([
 
                 if (object.currentObjectInfo.notfound) {
                     // Bail early if the object info reveals that it has been deleted.
+                    object.context = {
+                        type: 'deleted'
+                    };
                     object.simpleBrowse = {
                         narrativeTitle: {
                             value: null
@@ -693,8 +737,8 @@ define([
 
                 // This may be a narrative or a reference workspace.
                 // We get this from the metadata.
+                var narrativeTitle, narrativeId, narrativeUrl;
                 if (object.workspaceInfo.metadata.narrative) {
-                    var narrativeTitle, narrativeId, narrativeUrl;
                     if (!object.workspaceInfo.metadata.narrative_nice_name) {
                         if (object.workspaceInfo.metadata.is_temporary === 'true') {
                             narrativeTitle = '* TEMPORARY *';
@@ -716,12 +760,14 @@ define([
                         narrativeUrl: narrativeUrl
                     };
                 } else if (object.workspaceInfo.name === 'KBaseExampleData') {
+                    narrativeTitle = 'example';
                     object.context = {
                         type: 'exampleData'
                     };
                 } else if (object.originalObjectInfo.metadata.Source) {
                     // If we have a Source property, chances are it is from a
                     // reference workspace.
+                    narrativeTitle = 'reference data';
                     object.context = {
                         type: 'reference',
                         workspaceName: object.workspaceInfo.name,
@@ -730,7 +776,18 @@ define([
                         accession: object.currentObjectInfo.metadata.accession
                     };
                     // TODO: don't reference workspaces have some metadata to describe
+                } else if (object.workspaceInfo.name === 'ReferenceDataManager') {
+                    // If we have a Source property, chances are it is from a
+                    // reference workspace.
+                    narrativeTitle = 'reference data manager';
+                    object.context = {
+                        type: 'referencedatamanager',
+                        workspaceName: object.workspaceInfo.name                        
+                    };
+                    // TODO: don't reference workspaces have some metadata to describe                    
                 } else {
+                    console.log('unknown: ', object);
+                    narrativeTitle = 'unknown';
                     object.context = {
                         type: 'unknown',
                         workspaceName: object.workspaceInfo.name
@@ -765,9 +822,14 @@ define([
                 
                 object.simpleBrowse = {
                     narrativeTitle: {
-                        value: object.context.narrativeTitle,
+                        value: narrativeTitle || null,
                         info: 'The narrative',
-                        url: object.context.narrativeUrl
+                        type: object.context.type,
+                        url: narrativeUrl || null
+                    },
+                    narrativeVersion: {
+                        value: object.narrativeInfo ? object.narrativeInfo.version : '',
+                        info: 'The version of the Narrative'
                     },
                     objectVersion: {
                         value: object.currentObjectInfo.version,

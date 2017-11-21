@@ -371,6 +371,14 @@ define([
                 display: 'inline-block'
             }
         }, [
+            span({
+                style: {
+                    fontWeight: 'bold',
+                    color: 'gray',
+                    marginTop: '8px',
+                    fontSize: '80%'
+                }
+            }, 'Filters: '),
             buildSearchFilters(),
             
             div({
@@ -411,7 +419,7 @@ define([
         },
         filterArea: {
             flex: '0 0 50px',
-            textAlign: 'center'
+            textAlign: 'left'
             // border: '1px blue dashed'
         },
         resultArea: {
