@@ -363,12 +363,16 @@ define([
                 // widths are summed, and each column's actual width attribute
                 // is set as the percent of total.
                 width: 35,
+                style: {
+
+                },
                 action: {
-                    fn: doOpenNarrative
+                    // fn: doOpenNarrative
+                    link: 'url'
                 }
             },
             {
-                name: 'objectVersion',
+                name: 'narrativeVersion',
                 label: 'Ver',
                 type: 'number',
                 format: '0,0',
