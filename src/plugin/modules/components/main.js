@@ -322,7 +322,7 @@ define([
 
         // TRY COMPUTING UBER-STATE
         var searchState = ko.pureComputed(function () {
-            console.log('search state calc...', searching());
+            // console.log('search state calc...', searching());
             if (searching()) {
                 return 'inprogress';
             }

@@ -120,10 +120,11 @@ define([
             // if (isWithinHistoryContainer(ev.target)) {
             //     return true;
             // }
-            if (ev.currentTarget.getAttribute('data-type') === 'history-item') {
+            var t = ev.target;
+            if (t.getAttribute('data-type') === 'history-item') {
                 return true;
             }
-            if (ev.currentTarget.getAttribute('data-type') === 'history-toggle-button') {
+            if (t.getAttribute('data-type') === 'history-toggle-button') {
                 return true;
             }
 
@@ -197,7 +198,8 @@ define([
         },
         historyItem: {
             css: {
-                padding: '3px'
+                padding: '3px',
+                cursor: 'pointer'
             },
             pseudo: {
                 hover: {
