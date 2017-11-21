@@ -27,6 +27,9 @@ install:
             name: reske-simple-search/search
             module: components/search
         -
+            name: reske-simple-search/search-bar
+            module: components/searchBar
+        -
             name: reske-simple-search/browser
             module: components/browser
         -
@@ -59,7 +62,7 @@ install:
             module: components/generic/help
         -
             name: reske-simple-search/error
-            module: components/generic/error
+            module: components/generic/error            
 
     routes:
         -
