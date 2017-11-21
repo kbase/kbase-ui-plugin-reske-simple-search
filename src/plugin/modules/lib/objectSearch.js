@@ -27,12 +27,6 @@ define([
         });
 
         function objectSearch(param) {
-
-            // var client = new GenericClient({
-            //     url: runtime.config('services.reske.url'),
-            //     module: 'KBaseRelationEngine',
-            //     token: runtime.service('session').getAuthToken()
-            // });
             var timer = Timer();
             timer.startTimer('search objects');
             // var start = new Date().getTime();
@@ -58,8 +52,6 @@ define([
                             }
                         );
                     }
-
-                    // arg.message(err.message);
                 })          
                 .then(function (result) {
                     // var finished = new Date().getTime();
@@ -126,116 +118,6 @@ define([
             cancelled: false
         };
 
-        function addStringSearch(keySearch, keySearchTerm) {
-            var value = keySearch.fields.string_value();
-            if (value) {
-                if (value.length < 3) {
-                // todo  this should be in the search keys list
-                    return 'Sorry, the search term ' + keySearch.key + ' must be > 2 characters';
-                } else {
-                // TODO: ensure only one instance of a key search term
-                // TODO: we must type the keys ...
-                //   ... value is just for strings
-                    keySearchTerm[keySearch.key] = {
-                        value: value
-                    };
-                }
-            }
-        }
-
-        function isEmpty(value) {
-            return (value === undefined || value.length === 0);
-        }
-
-        // Note that RESKE uses "double" in the api, but otherwise refers to them as floats.
-        function addFloatSearch(keySearch, keySearchTerm) {
-            var value = keySearch.fields.float_value();
-            var minValue = keySearch.fields.min_float();
-            var maxValue = keySearch.fields.max_float();
-            if (isEmpty(value) && isEmpty(minValue) && isEmpty(maxValue)) {
-                return;
-            }
-            try {
-                var searchTerm = {};
-                var termSet = false;
-                if (!isEmpty(value)) {
-                    var floatValue = parseFloat(value);
-                    if (isNaN(floatValue)) {
-                        return 'Invalid exact float entry: ' + value;
-                    }
-                    searchTerm.double_value = floatValue;
-                    termSet = true;
-                }
-
-                if (!(isEmpty(minValue))) {
-                    var minFloatValue = parseFloat(minValue);
-                    if (isNaN(minFloatValue)) {
-                        return 'Invalid min float entry: ' + minValue;
-                    }
-                    searchTerm.min_double = minFloatValue;
-                    termSet = true;
-                }
-
-                if (!isEmpty(maxValue)) {
-                    var maxFloatValue = parseFloat(maxValue);
-                    if (isNaN(maxFloatValue)) {
-                        return 'Invalid max float entry: ' + value;
-                    }
-                    searchTerm.max_double = maxFloatValue;
-                    termSet = true;
-                }
-                if (termSet) {
-                    keySearchTerm[keySearch.key] = searchTerm;
-                }
-            } catch (ex) {
-                return ex.message;
-            }
-        }
-
-        function addIntegerSearch(keySearch, keySearchTerm) {
-            var value = keySearch.fields.int_value();
-            var minValue = keySearch.fields.min_int();
-            var maxValue = keySearch.fields.max_int();
-            if (isEmpty(value) && isEmpty(minValue) && isEmpty(maxValue)) {
-                return;
-            }
-            try {
-                var searchTerm = {};
-                var termSet = false;
-                if (!isEmpty(value)) {
-                    var intValue = parseInt(value);
-                    if (isNaN(intValue)) {
-                        return 'Invalid exact integer entry: ' + value;
-                    }
-                    searchTerm.int_value = intValue;
-                    termSet = true;
-                }
-
-                if (!(isEmpty(minValue))) {
-                    var minIntValue = parseInt(minValue);
-                    if (isNaN(minIntValue)) {
-                        return 'Invalid min integer entry: ' + minValue;
-                    }
-                    searchTerm.min_int = minIntValue;
-                    termSet = true;
-                }
-
-                if (!isEmpty(maxValue)) {
-                    var maxIntValue = parseInt(maxValue);
-                    if (isNaN(maxIntValue)) {
-                        return 'Invalid max integer entry: ' + maxValue;
-                    }
-                    searchTerm.max_int = maxIntValue;
-                    termSet = true;
-                }
-                if (termSet) {
-                    keySearchTerm[keySearch.key] = searchTerm;
-                }
-            } catch (ex) {
-                return ex.message;
-            }
-        }
-
         /*
         arg is a vm:
         status()
@@ -251,6 +133,7 @@ define([
         */
         function executeSearch(arg) {
             return Promise.try(function () {
+                console.log('starting search...');
                 // Search cancellation
                 if (currentSearch.search) {
                     console.warn('cancelling search...');
@@ -266,10 +149,6 @@ define([
                 arg.status('setup');
 
                 var param = {
-                    // object_type: 'narrative',
-                    // match_filter: {
-                    //     full_text_in_all: searchInput(),
-                    // },
                     match_filter: {},
                     pagination: {
                         start: (arg.page - 1) * arg.pageSize || 0,
@@ -300,88 +179,17 @@ define([
 
                 // Free text search
                 var freeTextTerm = arg.query;
-                var allowMatchAll = false;
-                if (freeTextTerm && freeTextTerm.length > 0) {
-                    if (freeTextTerm.length < 3) {
-                        if (freeTextTerm === '*') {
-                            newFilter.match_filter.full_text_in_all = null;
-                            allowMatchAll = true;
-                        } else {
-                            // todo this message should be beneath the free text search input
-                            arg.message('Sorry, the search term must be > 2 characters');
-                        }
-                    } else {
-                        newFilter.match_filter.full_text_in_all = freeTextTerm;
-                    }
+                if (freeTextTerm === '*') {
+                    newFilter.match_filter.full_text_in_all = null;
+                } else {
+                    newFilter.match_filter.full_text_in_all = freeTextTerm;
                 }
-
-                // KEY SEARCHES DISABLED FOR NOW
-                // Key search
-                // one search term per key
-                // keys derived from the type
-                // can only search on keys when there is an object type
-                var keySearchTerm = {};
-                var error;
-                // if (objectType()) {
-                //     newFilter.object_type = objectType();
-                //     if (keySearches().length > 0) {
-                //         keySearches().forEach(function (keySearch, index) {
-                //             // Need to inspect each one based on the type... wow.
-                //             switch (keySearch.type) {
-                //             case 'string':
-                //                 var error = addStringSearch(keySearch, keySearchTerm);
-                //                 if (error) {
-                //                     message(error);
-                //                 }
-                //                 break;
-                //             case 'integer':
-                //                 error = addIntegerSearch(keySearch, keySearchTerm);
-                //                 if (error) {
-                //                     message(error);
-                //                 }
-                //                 break;
-                //             case 'float':
-                //                 error = addFloatSearch(keySearch, keySearchTerm);
-                //                 if (error) {
-                //                     message(error);
-                //                 }
-                //                 break;
-                //                 // TODO: implement the other types!
-                //             }
-                //
-                //         });
-                //         newFilter.match_filter.lookupInKeys = keySearchTerm;
-                //     }
-                // }
-
-                // If there are no search terms at all, we just reset
-                // the search.
-                if (!newFilter.match_filter.full_text_in_all ) {                    
-                    if (newFilter.match_filter.full_text_in_all === null && allowMatchAll) {
-                        // let it pass
-                    } else {
-                        console.warn('object search called with no query');
-                        arg.searchTotal(0);
-                        arg.actualSearchTotal(0);
-                        arg.searchResults.removeAll();
-                        arg.status('needinput');
-                        arg.message('No input');
-                        return;
-                    }
-                }
-
-                // Compare old and new filter.
-                // If we have a filter change, we need to reset the page start.
-                // if (JSON.stringify(filter) !== JSON.stringify(newFilter)) {
-                //     arg.pageStart(0);
-                // }
 
                 filter = newFilter;
                 param.object_type = filter.object_type;
                 param.match_filter = filter.match_filter;
 
                 arg.status('searching');
-                arg.message('Searching...');
 
                 var start = new Date().getTime(), startSlather;
 
@@ -410,12 +218,9 @@ define([
                             arg.status('noresults');
                             arg.searchTotal(0);
                             arg.actualSearchTotal(0);
-                            arg.message('Found nothing');
                             return;
                         }
-                        arg.message('Found ' + hits.total + ' items');
-
-                        hits.objects.forEach(function (object, index) {
+                        hits.objects.forEach(function (object) {
                             arg.searchResults.push(object);
                         });
                         arg.status('haveresults');
@@ -429,10 +234,6 @@ define([
                             arg.actualSearchTotal(hits.total);
                             var actualMax = arg.pageSize * Math.floor(maxSearchResults/arg.pageSize);
                             arg.searchTotal(actualMax);
-                            // addMessage({
-                            //     type: 'warning',
-                            //     message: 'Too many search results (' + result.total + '), restricted to 10,000'
-                            // });
                         } else {
                             arg.actualSearchTotal(hits.total);
                             arg.searchTotal(hits.total);
@@ -680,7 +481,7 @@ define([
         }
 
         function processResult(searchResult) {
-            searchResult.objects.forEach(function (object, i) {
+            searchResult.objects.forEach(function (object) {
                 var username = runtime.service('session').getUsername();
 
                 // also patch up the narrative object...
@@ -842,7 +643,7 @@ define([
                     },
                     type: {
                         value: object.type.kbaseTypeId,
-                        info: 'This is an object of type ' + object.type
+                        info: 'This is an object of type ' + object.type.kbaseTypeId
                     },
                     date: {
                         value: object.timestamp,
@@ -889,7 +690,6 @@ define([
             };
 
             return rpc.call('KBaseRelationEngine', 'search_types', [param])
-            // return client.callFunc('search_types', [param])
                 .then(function (result) {
                     var searchResult = result[0];
                     var typeToCount = {};

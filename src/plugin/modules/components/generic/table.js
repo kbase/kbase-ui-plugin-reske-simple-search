@@ -719,7 +719,6 @@ define([
             '<!-- ko ifnot: $component.isLoading -->',
             p('NO RESULTS FROM SEARCH - PLACEHOLDER'),
             '<!-- /ko -->'
-           
         ]);
     }
 
@@ -761,7 +760,7 @@ define([
                 }, buildNoActiveSearch()), // buildNoActiveSearch()),
                 '<!-- /ko -->',
 
-                // Handle case of a search being processed
+                // Handle case of a search being processed - "inprogress"
 
                 '<!-- ko case: $default -->',
 

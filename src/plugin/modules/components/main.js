@@ -97,9 +97,7 @@ define([
         var withPublicData = ko.observable(true);
 
         // UI BITS
-        var message = ko.observable();
         var status = ko.observable();
-
         var error = ko.observable();
 
         // SOMEbody needs to figure out the new page size
@@ -140,13 +138,19 @@ define([
                 searching(true);
             })
                 .then(function () {
-                    // Head off an empty query at the pass.
-                    // This may happen due to changes in search parameters when
-                    // there isn't an active search.
-                    // TODO: more graceful way of handling this; 
+                    // If the query is empty, we simply reset the search.
                     if (!params.query) {
+                        console.warn('search called with no query - resetting search');
+                        searchTotal(0);
+                        actualSearchTotal(0);
+                        searchResults.removeAll();
+                        status('needinput');
                         return;
                     }
+
+                    // Other search string validation and reformatting could be done here...
+
+                    
                     // Ignore an identitical search. This can happen, although it
                     // shouldn't with churn in ...
                     // console.log('searching with...', params);
@@ -177,7 +181,6 @@ define([
 
                             status: status,
                             // searchExpression: searchExpression,
-                            message: message,
                             searchTotal: searchTotal,
                             actualSearchTotal: actualSearchTotal,
                             searchResults: searchResults
@@ -319,6 +322,7 @@ define([
 
         // TRY COMPUTING UBER-STATE
         var searchState = ko.pureComputed(function () {
+            console.log('search state calc...', searching());
             if (searching()) {
                 return 'inprogress';
             }
