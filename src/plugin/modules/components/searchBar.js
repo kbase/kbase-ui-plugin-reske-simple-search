@@ -120,7 +120,10 @@ define([
             // if (isWithinHistoryContainer(ev.target)) {
             //     return true;
             // }
-            if (ev.target.getAttribute('data-type') === 'history-item') {
+            if (ev.currentTarget.getAttribute('data-type') === 'history-item') {
+                return true;
+            }
+            if (ev.currentTarget.getAttribute('data-type') === 'history-toggle-button') {
                 return true;
             }
 
@@ -283,8 +286,7 @@ define([
                     div({
                         dataBind: {
                             text: '$data',
-                            click: '$component.useFromHistory',
-                            // clickBubble: false
+                            click: '$component.useFromHistory'
                         },
                         class: styles.classes.historyItem,
                         dataType: 'history-item'
@@ -303,6 +305,7 @@ define([
             ]),
             div({
                 class: 'input-group-addon',
+                dataType: 'history-toggle-button',
                 style: {
                     cursor: 'pointer'
                 },

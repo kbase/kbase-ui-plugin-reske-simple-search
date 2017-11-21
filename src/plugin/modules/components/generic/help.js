@@ -81,7 +81,6 @@ define([
     function viewModel(params) {
         var helpDb = params.helpDb;
         var hostVm = params.hostVm;
-        console.log('pARAMS', params);
 
         var topicsIndex = {};
         helpDb.topics.forEach(function (topic) {
