@@ -49,19 +49,19 @@ install:
             module: components/searchError
         # GENERIC
         -
-            name: reske-simple-search/dialog
+            name: generic/dialog
             module: components/generic/dialog
         -
-            name: reske-simple-search/table
+            name: generic/table
             module: components/generic/table
         -
-            name: reske-simple-search/overlay-panel
+            name: generic/overlay-panel
             module: components/generic/overlayPanel
         -
-            name: reske-simple-search/help
+            name: generic/help
             module: components/generic/help
         -
-            name: reske-simple-search/error
+            name: generic/error
             module: components/generic/error            
 
     routes:

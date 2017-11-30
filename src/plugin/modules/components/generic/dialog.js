@@ -16,8 +16,8 @@ define([
             params.onClose();
         }
         return {
-            title: 'my title',
-            body: 'my body',
+            title: params.title,
+            body: params.body,
             buttons: [
                 {
                     title: 'Close',

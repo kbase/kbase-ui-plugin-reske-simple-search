@@ -76,7 +76,7 @@ define([
         return div({
             dataBind: {
                 component: {
-                    name: '"reske-simple-search/error"',
+                    name: '"generic/error"',
                     params: {
                         code: 'code',
                         message: 'message',
