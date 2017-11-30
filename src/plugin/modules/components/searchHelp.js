@@ -39,7 +39,7 @@ define([
         return div({
             dataBind: {
                 component: {
-                    name: '"reske-simple-search/help"',
+                    name: '"generic/help"',
                     params: {
                         helpDb: 'helpDb',
                         hostVm: 'hostVm'

@@ -232,12 +232,17 @@ define([
             window.open(data.url, '_blank');
         }
 
-        function doRowAction(data) {
-            if (table.rowAction) {
-                table.rowAction(data);
-            } else {
-                console.warn('No row action...', table, data);
-            }
+        var doRowAction;
+        if (table.rowAction) {
+            doRowAction = function (data) {
+                if (table.rowAction) {
+                    table.rowAction(data);
+                } else {
+                    console.warn('No row action...', table, data);
+                }
+            };
+        } else {
+            doRowAction = null;
         }
 
         // LIFECYCLE
@@ -281,7 +286,7 @@ define([
                 window.open(url, '_blank');
             }
         }
-        
+
         return {
             rows: table.rows,
             isLoading: table.isLoading,
@@ -295,7 +300,9 @@ define([
             doRowAction: doRowAction,
             // lifecycle hooks
             dispose: dispose,
-            openLink: openLink
+            openLink: openLink,
+            // thread env for useful plugin-level hooks.
+            env: table.env
         };
     }
 
@@ -618,7 +625,7 @@ define([
                                 params: {
                                     field: 'row[column.name]',
                                     row: 'row',
-                                    search: '$component.search'
+                                    env: '$component.env'
                                 }
                             }
                             // text: 'column.component'

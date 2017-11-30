@@ -508,7 +508,7 @@ define([
                 }
             }),
             utils.komponent({
-                name: 'reske-simple-search/overlay-panel',
+                name: 'generic/overlay-panel',
                 params: {
                     component: 'overlayComponent',
                     hostVm: 'search'

@@ -27,15 +27,7 @@ define([
             showPanel(!showPanel());
         }
 
-        params.component.subscribe(function (newValue) {
-            if (newValue) {
-                showPanel(true);
-            } else {
-                if (showPanel()) {
-                    showPanel(false);
-                }
-            }
-        });
+       
 
         var panelStyle = ko.pureComputed(function() {
             if (showPanel() === undefined) {
@@ -61,8 +53,48 @@ define([
             case 'info':
             default:
                 return 'rgba(36, 89, 193, 0.8)';       
+            }            
+        });
+
+        var embeddedComponentName = ko.observable();
+        var embeddedParams = ko.observable();
+        var embeddedViewModel = ko.observable({});
+        
+        embeddedParams.onClose = 'doClose';
+
+        // The viewmodel for the embedded component
+
+        params.component.subscribe(function (newValue) {
+            console.log('new component?', newValue);
+            if (newValue) {
+                showPanel(true);
+                embeddedComponentName(newValue.name);
+
+                // embeddedParams(Object.keys(newValue.params).reduce(function (accum, key) {
+                //     accum[key] = newValue.params[key];
+                //     return accum;
+                // }, {}));
+                
+                embeddedParams('{' + Object.keys(newValue.params).map(function (key) {
+                    return key + ':' + newValue.params[key];
+                }).join(', ') + '}');
+
+                console.log('embedded params...', embeddedParams());
+
+                var newVm = Object.keys(newValue.viewModel).reduce(function (accum, key) {
+                    accum[key] = newValue.viewModel[key];
+                    return accum;
+                }, {});
+                newVm.onClose = doClose;
+                embeddedViewModel(newVm);
+            } else {
+                if (showPanel()) {
+                    showPanel(false);
+                    embeddedComponentName(null);
+                    embeddedParams(null);
+                    embeddedViewModel(null);
+                }
             }
-            
         });
 
         return {
@@ -71,7 +103,11 @@ define([
             typeBackgroundColor: typeBackgroundColor,
             doClose: doClose,
             component: params.component,
-            hostVm: hostVm
+            hostVm: hostVm,
+
+            embeddedComponentName: embeddedComponentName,
+            embeddedParams: embeddedParams,
+            embeddedViewModel: embeddedViewModel
         };
     }
 
@@ -203,22 +239,26 @@ define([
             div({
                 class: styles.classes.panelBody
             }, [
-                '<!-- ko if: component() -->',
+                '<!-- ko if: embeddedComponentName() -->',
+                '<!-- ko with: embeddedViewModel() -->',                
                 div({
                     dataBind: {
                         component: {
-                            name: 'component().name',
-                            params: {
-                                // original: 'component().params',
-                                onClose: 'doClose',
-                                hostVm: 'hostVm'
-                            }
+                            name: '$component.embeddedComponentName',
+                            params: '$data',
+                            // xparams: '$component.embeddedParams()'
+                            // params: {
+                            //     // original: 'component().params',
+                            //     onClose: 'doClose',
+                            //     hostVm: 'hostVm'
+                            // }
                         }
                     },
                     style: {
                         flex: '1 1 0px'
                     }
                 }),
+                '<!-- /ko -->',
                 '<!-- /ko -->'
             ])
         ]));

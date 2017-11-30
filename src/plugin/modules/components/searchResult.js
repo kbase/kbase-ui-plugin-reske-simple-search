@@ -90,7 +90,7 @@ define([
             div({
                 dataBind: {
                     component: {
-                        name: '"reske-simple-search/table"',
+                        name: '"generic/table"',
                         params: {
                             table: 'table'
                         }
