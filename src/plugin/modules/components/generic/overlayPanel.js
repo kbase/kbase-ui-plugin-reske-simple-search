@@ -16,6 +16,7 @@ define([
     'use strict';
 
     var t = html.tag,        
+        span = t('span'),
         div = t('div');
 
     function viewModel(params) {
@@ -26,8 +27,6 @@ define([
         function doClose() {
             showPanel(!showPanel());
         }
-
-       
 
         var panelStyle = ko.pureComputed(function() {
             if (showPanel() === undefined) {
@@ -65,21 +64,13 @@ define([
         // The viewmodel for the embedded component
 
         params.component.subscribe(function (newValue) {
-            console.log('new component?', newValue);
             if (newValue) {
                 showPanel(true);
                 embeddedComponentName(newValue.name);
-
-                // embeddedParams(Object.keys(newValue.params).reduce(function (accum, key) {
-                //     accum[key] = newValue.params[key];
-                //     return accum;
-                // }, {}));
                 
                 embeddedParams('{' + Object.keys(newValue.params).map(function (key) {
                     return key + ':' + newValue.params[key];
                 }).join(', ') + '}');
-
-                console.log('embedded params...', embeddedParams());
 
                 var newVm = Object.keys(newValue.viewModel).reduce(function (accum, key) {
                     accum[key] = newValue.viewModel[key];
@@ -235,7 +226,7 @@ define([
                     click: 'doClose'
                 },
                 class: styles.classes.panelButton
-            }, 'X'),
+            }, span({class: 'fa fa-times'})),
             div({
                 class: styles.classes.panelBody
             }, [
