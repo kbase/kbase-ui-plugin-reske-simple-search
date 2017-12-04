@@ -146,7 +146,20 @@ define([
                     top: '8px',
                     right: '8px',
                     color: '#FFF',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    border: '2px transparent solid',
+                    zIndex: '4'
+                },
+                pseudo: {
+                    hover: {
+                        border: '2px rgba(255, 84, 84,0.5) solid',
+                        color: 'rgba(255, 84, 84, 0.8)'
+                    },
+                    active: {
+                        border: '2px rgba(255, 84, 84,0.5) solid',
+                        backgroundColor: 'rgba(255,255,255,0.5)',
+                        color: 'rgba(255, 84, 84, 0.8)'
+                    }
                 }
             },
             panelin: {
