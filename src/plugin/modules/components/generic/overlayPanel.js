@@ -48,10 +48,11 @@ define([
             }
             switch (params.component().type) {                     
             case 'error':
-                return 'rgba(216, 138, 138, 0.8)';
+                return 'rgba(145, 91, 91, 0.8)';
             case 'info':
             default:
-                return 'rgba(36, 89, 193, 0.8)';       
+                // return 'rgba(0, 0, 0, 0.8)';
+                return 'rgba(64, 89, 140, 0.8)';       
             }            
         });
 
@@ -131,7 +132,7 @@ define([
             panelBody: {
                 css: {
                     position: 'absolute',
-                    top: '30px',
+                    top: '0',
                     left: '0',
                     bottom: '0',
                     width: '100%',

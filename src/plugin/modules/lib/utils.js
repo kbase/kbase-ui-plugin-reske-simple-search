@@ -191,7 +191,7 @@ define([
     }
     ReskeSearchError.prototype = Object.create(Error.prototype);
     ReskeSearchError.prototype.constructor = ReskeSearchError;
-    ReskeSearchError.prototype.name = 'AppServiceError';
+    ReskeSearchError.prototype.name = 'ReskeSearchError';
 
     return {
         komponent: komponent,
