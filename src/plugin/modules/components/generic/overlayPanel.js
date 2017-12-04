@@ -20,8 +20,6 @@ define([
         div = t('div');
 
     function viewModel(params) {
-        var hostVm = params.hostVm;
-
         var showPanel = ko.observable();
 
         function doClose() {
@@ -69,7 +67,7 @@ define([
                 showPanel(true);
                 embeddedComponentName(newValue.name);
                 
-                embeddedParams('{' + Object.keys(newValue.params).map(function (key) {
+                embeddedParams('{' + Object.keys(newValue.params || {}).map(function (key) {
                     return key + ':' + newValue.params[key];
                 }).join(', ') + '}');
 
@@ -95,7 +93,6 @@ define([
             typeBackgroundColor: typeBackgroundColor,
             doClose: doClose,
             component: params.component,
-            hostVm: hostVm,
 
             embeddedComponentName: embeddedComponentName,
             embeddedParams: embeddedParams,
@@ -146,7 +143,20 @@ define([
                     top: '8px',
                     right: '8px',
                     color: '#FFF',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    border: '2px transparent solid',
+                    zIndex: '4'
+                },
+                pseudo: {
+                    hover: {
+                        border: '2px rgba(255, 84, 84,0.5) solid',
+                        color: 'rgba(255, 84, 84, 0.8)'
+                    },
+                    active: {
+                        border: '2px rgba(255, 84, 84,0.5) solid',
+                        backgroundColor: 'rgba(255,255,255,0.5)',
+                        color: 'rgba(255, 84, 84, 0.8)'
+                    }
                 }
             },
             panelin: {
@@ -238,12 +248,6 @@ define([
                         component: {
                             name: '$component.embeddedComponentName',
                             params: '$data',
-                            // xparams: '$component.embeddedParams()'
-                            // params: {
-                            //     // original: 'component().params',
-                            //     onClose: 'doClose',
-                            //     hostVm: 'hostVm'
-                            // }
                         }
                     },
                     style: {
