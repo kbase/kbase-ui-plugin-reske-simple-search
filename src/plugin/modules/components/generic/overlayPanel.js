@@ -20,8 +20,6 @@ define([
         div = t('div');
 
     function viewModel(params) {
-        var hostVm = params.hostVm;
-
         var showPanel = ko.observable();
 
         function doClose() {
@@ -69,7 +67,7 @@ define([
                 showPanel(true);
                 embeddedComponentName(newValue.name);
                 
-                embeddedParams('{' + Object.keys(newValue.params).map(function (key) {
+                embeddedParams('{' + Object.keys(newValue.params || {}).map(function (key) {
                     return key + ':' + newValue.params[key];
                 }).join(', ') + '}');
 
@@ -95,7 +93,6 @@ define([
             typeBackgroundColor: typeBackgroundColor,
             doClose: doClose,
             component: params.component,
-            hostVm: hostVm,
 
             embeddedComponentName: embeddedComponentName,
             embeddedParams: embeddedParams,
@@ -251,12 +248,6 @@ define([
                         component: {
                             name: '$component.embeddedComponentName',
                             params: '$data',
-                            // xparams: '$component.embeddedParams()'
-                            // params: {
-                            //     // original: 'component().params',
-                            //     onClose: 'doClose',
-                            //     hostVm: 'hostVm'
-                            // }
                         }
                     },
                     style: {

@@ -14,6 +14,40 @@ define([
         ul = t('ul'),
         li = t('li');
 
+
+
+    function viewModel(params) {
+        var helpDb = params.helpDb;
+
+        var topicsIndex = {};
+        helpDb.topics.forEach(function (topic) {
+            topicsIndex[topic.id] = topic;
+        });
+
+        var currentTopicId = ko.observable();
+
+        var currentTopic = ko.observable();
+
+        currentTopicId.subscribe(function () {
+            currentTopic(topicsIndex[currentTopicId()]);
+        });
+
+        // ACTIONS
+        function doSelectTopic(topic) {
+            currentTopicId(topic.id);
+        }
+
+        currentTopicId(params.topic || 'overview');
+
+        return {
+            topics: helpDb.topics,
+            references: helpDb.references,
+            currentTopicId: currentTopicId,
+            doSelectTopic: doSelectTopic,
+            currentTopic: currentTopic
+        };
+    }
+
     var styles = html.makeStyles({
         classes: {
             component: {
@@ -77,39 +111,6 @@ define([
             }
         }
     });
-
-    function viewModel(params) {
-        var helpDb = params.helpDb;
-        var hostVm = params.hostVm;
-
-        var topicsIndex = {};
-        helpDb.topics.forEach(function (topic) {
-            topicsIndex[topic.id] = topic;
-        });
-
-        var currentTopicId = ko.observable();
-
-        var currentTopic = ko.observable();
-
-        currentTopicId.subscribe(function () {
-            currentTopic(topicsIndex[currentTopicId()]);
-        });
-
-        // ACTIONS
-        function doSelectTopic(topic) {
-            currentTopicId(topic.id);
-        }
-
-        currentTopicId(params.topic || 'overview');
-
-        return {
-            topics: helpDb.topics,
-            references: helpDb.references,
-            currentTopicId: currentTopicId,
-            doSelectTopic: doSelectTopic,
-            currentTopic: currentTopic
-        };
-    }
 
     ko.bindingHandlers.htmlMarkdown = {
         update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
