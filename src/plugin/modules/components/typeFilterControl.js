@@ -1,7 +1,9 @@
 define([
+    'numeral',
     'knockout-plus',
     'kb_common/html'
 ], function (
+    numeral,
     ko,
     html
 ) {
@@ -22,14 +24,40 @@ define([
     });
 
     function viewModel(params) {
-        var typeFilterOptions = params.search.typeFilterOptions.map(function (option) {
-            return option;
-        });
-        typeFilterOptions.unshift({
-            label: 'All Types',
-            value: '_select_',
-            count: params.search.searchTotal,
-            enabled: true
+        // Wrap the type filter options in order to transform the counts into formatting nubmers,
+        // and also to prefix the computed "all types" option.
+        var typeFilterOptions = ko.pureComputed(function () {
+            var options = params.search.typeFilterOptions.map(function(option) {
+                var count = option.count();
+                if (typeof count === 'number') {
+                    count = numeral(count).format('0,0');
+                }
+                return {
+                    label: option.label,
+                    value: option.value,
+                    count: count
+                };
+            });
+
+            var searchTotal; 
+            if (!params.search.typeFilterOptions.some(function (option) {
+                if (option.count() === undefined || option.count() === null) {
+                    return true;
+                }
+            })) {
+                searchTotal = params.search.typeFilterOptions.reduce(function (acc, option) {
+                    return acc + (option.count() || 0);
+                }, 0);
+            }
+
+            options.unshift({
+                label: 'All Types',
+                value: '_select_',
+                count: searchTotal,
+                enabled: true
+            });
+
+            return options;
         });
 
         function doRemoveTypeFilter(data) {
@@ -92,12 +120,12 @@ define([
                 option({
                     dataBind: {
                         value: 'value ',
-                        text: 'count() !== undefined ? (label + " - " + count()) : label',
+                        text: 'count !== undefined ? (label + " - " + count) : label',
                         attr: {
                             selected: 'value === $component.typeFilter()[0]'
                         }
                     }
-                }),
+                })
             ])
         ]);
     }

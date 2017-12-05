@@ -3,3 +3,20 @@
     display: flex;
     flex-direction: column;
 }
+
+/* styles for generated markdown */
+/* WIP */
+/* Note that some styles are overriding bootstrap */
+.kb-help-markdown p {
+    font-size: 100%;
+    margin-bottom: 10px
+}
+
+/* overrides bootstrap */
+.kb-help-markdown blockquote {
+    font-size: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-left: 3px silver solid;
+    background-color: rgba(220,220,220,0.8);
+}

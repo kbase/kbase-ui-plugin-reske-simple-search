@@ -5,7 +5,7 @@ topics:
     id: overview
     title: Overview
     content: |
-      RESKE Simple Search Overview
+      The  *Search* tool allows you to search across Narratives, Reference, and Example data. Your search will reach into all Workspaces to which you have access, including **you own**, those **shared with you**, and those which are **shared with all users (public)**.
 
   -
     id: search-syntax
@@ -16,12 +16,73 @@ topics:
       > please provide examples
   -
     id: how-indexed
-    title: What data is indexed?
+    title: How data is indexed
     content: |
         Describe the types indexed, perhaps provide or link to docs which describe the indexed fields. 
+  -
+    id: examples
+    title: Examples
+    content: |
+      > provide examples here
+  -
+    id: feedback
+    title: Feedback
+    content: |
+      > provide feedback link here
+  -
+    id: test
+    title: Test
+    content: |
+      # Markdown Test
+
+      This section is here to exercise all Markdown styling to ensure that our styles work well.
+
+      ## Paragraphs
+
+      This is a paragraph. It is long enough, I believe, to ensure that wrapping occurs. Let's make sure that wrapping is a good readable line length.
+
+      Markdown does let you
+      break lines however
+      you
+      like
+      and keep them as a whole paragraph.
+
+      You can also override this with two  
+      or more spaces  
+      at the end of a line.
+
+      ## Font Styles
+
+      Now we turn to the font styles. The basic ones are *emphasis* (usually *italics*) and **strong** (aka **bold**). 
+      
+      The less common ~~strikethrough~~. 
+      
+      They can all be combined? *__italic bold__*, **_bold italic**, **~~bold strikethrough~~**, ad nauseum.
+
+      ## Header Styles
+
+      
+
+      ## Links
+
+      Links are not encouraged in help text, rather please use the "references" section in the help config file.
+
+      We may come up with a more sophisticated method of linking (e.g. to provide links within the ui) but not yet.
+
+      ## Embedding Images
+
+      Images should not be embedded directly into a document, but used as references. Images are stored in locally in the plugin
+      in the resources/images directory. You should use the special prefix $IMAGES/ with your images. The help viewer will translate 
+      these into the correct format for loading images in the ui.
+
+      > implement this!
 
 references:
   -
     url: http://kbase.us/help/search
-    title: Help Page for Reske Simple Search
+    title: Help Page for Search
     external: true
+  -
+    url: http://kbase.us/help/search
+    title: 'Blog Post: Introducing the new Search'
+    external: true    
