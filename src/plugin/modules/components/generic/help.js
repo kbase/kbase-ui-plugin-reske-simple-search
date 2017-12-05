@@ -14,8 +14,6 @@ define([
         ul = t('ul'),
         li = t('li');
 
-
-
     function viewModel(params) {
         var helpDb = params.helpDb;
 
@@ -72,7 +70,8 @@ define([
             },
             indexListItem: {
                 css: {                    
-                    display: 'block'
+                    display: 'block',
+                    padding: '4px'
                 }
             },
             indexListItemLink: {
@@ -106,7 +105,7 @@ define([
             },
             references: {
                 css: {
-
+                    marginTop: '12px'
                 }
             }
         }
@@ -163,7 +162,8 @@ define([
                 div({
                     dataBind: {
                         htmlMarkdown: 'content'
-                    }
+                    },
+                    class: 'kb-help-markdown'
                 })
                 // div({
                 //     dataBind: {
@@ -187,7 +187,7 @@ define([
                     dataBind: {
                         foreach: 'references'
                     }
-                }, a({
+                }, li(a({
                     dataBind: {
                         attr: {
                             href: 'url',
@@ -195,7 +195,7 @@ define([
                         },
                         text: 'title'
                     }
-                }))
+                })))
             ]),
             '<!-- /ko -->'
         ]);
