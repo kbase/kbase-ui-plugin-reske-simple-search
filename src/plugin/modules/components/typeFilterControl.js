@@ -50,6 +50,10 @@ define([
                 }, 0);
             }
 
+            if (searchTotal !== undefined) {
+                searchTotal = numeral(searchTotal).format('0,0');
+            }
+
             options.unshift({
                 label: 'All Types',
                 value: '_select_',
