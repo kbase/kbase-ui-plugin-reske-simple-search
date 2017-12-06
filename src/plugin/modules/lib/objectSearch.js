@@ -133,7 +133,6 @@ define([
         */
         function executeSearch(arg) {
             return Promise.try(function () {
-                console.log('starting search...');
                 // Search cancellation
                 if (currentSearch.search) {
                     console.warn('cancelling search...');
