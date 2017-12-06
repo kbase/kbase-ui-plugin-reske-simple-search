@@ -8,10 +8,12 @@ from a built-in close button (?)
 */
 define([
     'knockout-plus',
-    'kb_common/html'
+    'kb_common/html',
+    '../../lib/nanoBus',
 ], function (
     ko,
-    html
+    html,
+    NanoBus
 ) {
     'use strict';
 
@@ -22,8 +24,44 @@ define([
     function viewModel(params) {
         var showPanel = ko.observable();
 
+        var bus = NanoBus.make();
+
+        var openMessage = null;
+        bus.on('close', function (message) {
+            if (message && message.open) {
+                openMessage = message.open;
+                showPanel(false);
+            } else {
+                showPanel(false);                
+            }
+        });
+        bus.on('clear', function () {
+            component(null);
+        });
+
+        bus.on('open', function(message) {
+            if (showPanel()) {
+                bus.send('close', {open: message});
+                return;
+            } 
+
+            showPanel(true);
+            embeddedComponentName(message.name);
+            
+            embeddedParams('{' + Object.keys(message.params || {}).map(function (key) {
+                return key + ':' + message.params[key];
+            }).join(', ') + '}');
+
+            var newVm = Object.keys(message.viewModel).reduce(function (accum, key) {
+                accum[key] = message.viewModel[key];
+                return accum;
+            }, {});
+            newVm.onClose = doClose;
+            embeddedViewModel(newVm);        
+        });
+
         function doClose() {
-            showPanel(!showPanel());
+            bus.send('close');
         }
 
         var panelStyle = ko.pureComputed(function() {
@@ -64,28 +102,31 @@ define([
 
         params.component.subscribe(function (newValue) {
             if (newValue) {
-                showPanel(true);
-                embeddedComponentName(newValue.name);
-                
-                embeddedParams('{' + Object.keys(newValue.params || {}).map(function (key) {
-                    return key + ':' + newValue.params[key];
-                }).join(', ') + '}');
-
-                var newVm = Object.keys(newValue.viewModel).reduce(function (accum, key) {
-                    accum[key] = newValue.viewModel[key];
-                    return accum;
-                }, {});
-                newVm.onClose = doClose;
-                embeddedViewModel(newVm);
+                bus.send('open', newValue);                
             } else {
                 if (showPanel()) {
-                    showPanel(false);
-                    embeddedComponentName(null);
-                    embeddedParams(null);
-                    embeddedViewModel(null);
+                    bus.send('close');
+                    // showPanel(false);
+                    // embeddedComponentName(null);
+                    // embeddedParams(null);
+                    // embeddedViewModel(null);
                 }
             }
         });
+
+        function onPanelAnimationEnd(data, ev) {
+            if (ev.target.classList.contains(styles.classes.panelout)) {
+                bus.send('clear');
+                // HACK ALERT: since we are using knockout event listener, set 
+                // persistently on the node, we don't have any context for this
+                // animation end ... so if this was a close with open, the
+                // open message will have been set ...
+                if (openMessage) {
+                    bus.send('open', openMessage);
+                    openMessage = null;
+                }
+            }
+        }
 
         return {
             showPanel: showPanel,
@@ -96,7 +137,9 @@ define([
 
             embeddedComponentName: embeddedComponentName,
             embeddedParams: embeddedParams,
-            embeddedViewModel: embeddedViewModel
+            embeddedViewModel: embeddedViewModel,
+
+            onPanelAnimationEnd: onPanelAnimationEnd
         };
     }
 
@@ -220,7 +263,10 @@ define([
     function template() {
         return div({
             dataBind: {
-                css: 'panelStyle'
+                css: 'panelStyle',
+                event: {
+                    animationend: 'onPanelAnimationEnd'
+                }
             },
             class: styles.classes.container
         }, div({
