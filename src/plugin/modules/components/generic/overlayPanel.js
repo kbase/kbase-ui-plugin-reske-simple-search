@@ -265,7 +265,8 @@ define([
             dataBind: {
                 css: 'panelStyle',
                 event: {
-                    animationend: 'onPanelAnimationEnd'
+                    animationend: 'onPanelAnimationEnd',
+                    webkitAnimationEnd: 'onPanelAnimationEnd'
                 }
             },
             class: styles.classes.container
