@@ -116,17 +116,8 @@ define([
                 return;
             }
 
-            // console.log('subscribe changed', newValue, oldValue);
-            // var currentTopResultItem = (currentPage - 1) * oldValue + 1;
-
             var newPage = Math.floor((currentPage - 1) * oldValue / newValue) + 1;
-
-            // var newPage = Math.floor(currentTopResultItem / newValue) + 1;
-
-            // console.log('page size triggers new page', currentPage, newPage, newValue, oldValue);
-
             page(newPage);
-
         });
 
         var searchStack = [];
@@ -145,7 +136,7 @@ define([
                         actualSearchTotal(0);
                         searchResults.removeAll();
                         status('needinput');
-                        return;
+                        return true;
                     }
 
                     // Other search string validation and reformatting could be done here...
@@ -159,7 +150,7 @@ define([
                         var lastSearch = searchMap[lastSearchId];
                         if (utils.isEqual(params, lastSearch.params)) {
                             console.warn('skipping search - identical to previous pending');
-                            return;
+                            return false;
                         }
                     }
 
@@ -192,13 +183,20 @@ define([
                         })
                     ])
                         .spread(function (results, summary) {
-                        // TODO: process the results here rather than inside executeSearch!
+                            // TODO: process the results here rather than inside executeSearch!
                             typeFilterOptions.forEach(function (option) {
                                 option.count(summary.typeToCount[option.value]);
-                            });                        
+                            });
+                            return true;                     
                         });
-                })               
-                .catch(function (err) {   
+                })
+                .then(function (searched) {
+                    if (searched) {
+                        searching(false);
+                    }
+                })
+                .catch(function (err) {
+                    searching(false);
                     console.error('ERROR', err);                
                     if (err instanceof utils.ReskeSearchError) {
                         error({
@@ -233,8 +231,12 @@ define([
                         }
                     });
                 })
-                .finally(function () {
-                    searching(false);
+                .finally(function (value) {
+                    // if (!thisSearch.cancelled) {
+                    //     searching(false);
+                    // }
+                    // console.log('finally value', value);
+                    // searching(false);
                     if (searchId) {
                         if (searchMap[searchId]) {
                             delete searchMap[searchId];

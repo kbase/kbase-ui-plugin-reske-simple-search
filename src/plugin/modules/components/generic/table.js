@@ -96,23 +96,49 @@ define([
             alignItems: 'center'
         },
         headerCell: {
-            flex: '0 0 0px',
-            overflow: 'hidden',
-            whiteSpace: 'nowrap',
-            // border: '1px silver solid',
-            borderTop: '1px #DDD solid',
-            borderBottom: '1px #DDD solid',
-            height: '35px',
-            padding: '2px',
-            textAlign: 'left',
-            display: 'flex',
-            alignItems: 'center'
-        },
+            css: {
+                flex: '0 0 0px',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                // border: '1px silver solid',
+                borderTop: '1px #DDD solid',
+                borderBottom: '1px #DDD solid',
+                height: '35px',
+                padding: '2px',
+                textAlign: 'left',
+                display: 'flex',
+                alignItems: 'center'
+            }            
+        },        
         innerCell: {
             flex: '1 1 0px',
             overflow: 'hidden',
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis'
+        },
+        innerSortCell: {
+            flex: '1 1 0px',
+            // overflow: 'hidden'
+            whiteSpace: 'nowrap',
+            display: 'flex',
+            flexDirection: 'row',
+            overflow: 'overlay'
+        },
+        sortableCell: {
+            css: {
+                cursor: 'pointer',
+            },
+            pseudo: {
+                hover: {
+                    backgroundColor: 'rgba(200,200,200,0.8)'
+                }
+            }
+        },
+        sortedCell: {
+            backgroundColor: 'rgba(200,200,200,0.5)'
+        },
+        sortIndicator: {
+            display: 'inline'
         },
         sectionHeader: {
             padding: '4px',
@@ -306,6 +332,13 @@ define([
         };
     }
 
+    function obj(aa) {
+        return aa.reduce(function (acc, prop) {
+            acc[prop[0]] = prop[1];
+            return acc;
+        }, {});
+    }
+
     function buildResultsHeader() {
         return  div({
             class: styles.classes.headerRow,
@@ -317,55 +350,74 @@ define([
             }
         }, div({
             dataBind: {
-                style: 'column.headerStyle'
+                style: 'column.headerStyle',
+                css: obj([
+                    [styles.classes.sortableCell, 'column.sort ? true : false'],
+                    [styles.classes.sortedCell, 'column.sort && column.sort.active() ? true : false']
+                ]),
+                event: {
+                    click: 'column.sort ? function () {$component.doSort(column);} : false'
+                }
             },
             class: [styles.classes.headerCell]
         }, [
+            '<!-- ko if: column.sort -->',
+            div({
+                
+                class: [styles.classes.innerSortCell]
+            }, [
+                // header label
+                div({
+                    class: [styles.classes.innerCell]
+                }, [
+                    span({
+                        dataBind: {
+                            text: 'column.label'
+                        },
+                        style: {
+                            
+                            marginRight: '2px'
+                        },
+                    })
+                ]),
+
+                // sort indicator
+                div({
+                    class: [styles.classes.sortIndicator]
+                }, [
+                    '<!-- ko if: !column.sort.active() -->',
+                    span({
+                        class: 'fa fa-sort'
+                    }),
+                    '<!-- /ko -->',
+                    '<!-- ko if: column.sort.active() -->',
+                    '<!-- ko if: column.sort.direction() === "descending" -->',
+                    span({
+                        class: 'fa fa-sort-desc'
+                    }),
+                    '<!-- /ko -->',
+                    '<!-- ko if: column.sort.direction() === "ascending" -->',
+                    span({
+                        class: 'fa fa-sort-asc'
+                    }),
+                    '<!-- /ko -->',
+                    '<!-- /ko -->'
+                ])
+            ]),
+            '<!-- /ko -->',
+
+            '<!-- ko ifnot: column.sort -->',
             div({
                 class: [styles.classes.innerCell]
             }, [
-                '<!-- ko if: column.sort -->',
-
-                span({
-                    dataBind: {
-                        text: 'column.label',
-                        click: 'function () {$component.doSort(column);}'
-                    },
-                    style: {
-                        cursor: 'pointer',
-                        marginRight: '2px'
-                    },
-                }),
-                
-                '<!-- ko if: !column.sort.active() -->',
-                span({
-                    class: 'fa fa-sort'
-                }),
-                '<!-- /ko -->',
-                '<!-- ko if: column.sort.active() -->',
-                '<!-- ko if: column.sort.direction() === "descending" -->',
-                span({
-                    class: 'fa fa-sort-desc'
-                }),
-                '<!-- /ko -->',
-                '<!-- ko if: column.sort.direction() === "ascending" -->',
-                span({
-                    class: 'fa fa-sort-asc'
-                }),
-                '<!-- /ko -->',
-                '<!-- /ko -->',
-
-                
-                '<!-- /ko -->',
-
-                '<!-- ko if: !column.sort -->',
                 span({
                     dataBind: {
                         text: 'column.label'
                     }
                 }),
                 '<!-- /ko -->'
-            ])
+            ]),
+            '<!-- /ko -->'
         ]));
     }
 
