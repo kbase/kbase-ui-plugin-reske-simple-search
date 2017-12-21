@@ -90,7 +90,7 @@ define([
             // border: '1px silver solid',
             borderBottom: '1px #DDD solid',
             height: '35px',
-            padding: '2px 4px',
+            padding: '4px 4px',
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center'
@@ -104,7 +104,7 @@ define([
                 borderTop: '1px #DDD solid',
                 borderBottom: '1px #DDD solid',
                 height: '35px',
-                padding: '2px',
+                padding: '4px',
                 textAlign: 'left',
                 display: 'flex',
                 alignItems: 'center'
@@ -122,7 +122,7 @@ define([
             whiteSpace: 'nowrap',
             display: 'flex',
             flexDirection: 'row',
-            overflow: 'overlay'
+            overflow: 'hidden'
         },
         sortableCell: {
             css: {
