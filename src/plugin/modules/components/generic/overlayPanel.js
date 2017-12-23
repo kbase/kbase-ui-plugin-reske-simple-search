@@ -37,6 +37,7 @@ define([
         });
         bus.on('clear', function () {
             component(null);
+            embeddedComponentName(null);
         });
 
         bus.on('open', function(message) {
