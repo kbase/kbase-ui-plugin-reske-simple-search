@@ -58,6 +58,9 @@ install:
             name: generic/overlay-panel
             module: components/generic/overlayPanel
         -
+            name: generic/overlay-panel-bootstrappish
+            module: components/generic/overlayPanelBootstrappish
+        -
             name: generic/help
             module: components/generic/help
         -
