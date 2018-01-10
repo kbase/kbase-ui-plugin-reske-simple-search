@@ -48,12 +48,18 @@ define([
     }
 
     function viewModel(params) {
+        var infoHtml;
+        if (params.info() === undefined) {
+            infoHtml = 'none';
+        } else {
+            infoHtml = BS.buildPresentableJson(params.info());
+        }
         return {
             source: params.source,
             code: params.code,
             message: params.message,
             detail: params.detail,
-            info: BS.buildPresentableJson(params.info())
+            info: infoHtml
         };
     }
 
@@ -116,11 +122,11 @@ define([
                 hidden: false,
                 body: div({
                     dataBind: {
-                        if: 'info'
+                        if: '$data.info'
                     }
                 }, div({
                     dataBind: {
-                        html: 'info'
+                        html: '$data.info'
                     }
                 }))
             })
