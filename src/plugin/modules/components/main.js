@@ -503,13 +503,13 @@ define([
                 paddingLeft: '12px'
             }
         }, [
-            utils.komponent({
+            ko.kb.komponent({
                 name: 'reske-simple-search/search',
                 params: {
                     search: 'search'
                 }
             }),
-            utils.komponent({
+            ko.kb.komponent({
                 name: 'generic/overlay-panel',
                 params: {
                     component: 'overlayComponent',

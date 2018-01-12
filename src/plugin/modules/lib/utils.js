@@ -1,49 +1,7 @@
 define([
-    'kb_common/html',
 ], function (
-    html
 ) {
     'use strict';
-
-    var t = html.tag,
-        div = t('div'),
-        style = t('style');
-
-    function komponent(componentDef) {
-        return '<!-- ko component: {name: "' + componentDef.name +
-            '", params: {' +
-            Object.keys(componentDef.params).map(function (key) {
-                return key + ':' + componentDef.params[key];
-            }).join(',') + '}}--><!-- /ko -->';
-    }
-
-    function camelToHyphen(s) {
-        return s.replace(/[A-Z]/g, function (m) {
-            return '-' + m.toLowerCase();
-        });
-    }
-
-    function makeStyleAttribs(attribs) {
-        if (attribs) {
-            return Object.keys(attribs)
-                .map(function (rawKey) {
-                    var value = attribs[rawKey],
-                        key = camelToHyphen(rawKey);
-
-                    if (typeof value === 'string') {
-                        return key + ': ' + value;
-                    }
-                    // just ignore invalid attributes for now
-                    // TODO: what is the proper thing to do?
-                    return '';
-                })
-                .filter(function (field) {
-                    return field ? true : false;
-                })
-                .join('; ');
-        }
-        return '';
-    }
 
     function getProp(obj, props, defaultValue, isMissing) {
         if (typeof props === 'string') {
@@ -194,7 +152,6 @@ define([
     ReskeSearchError.prototype.name = 'ReskeSearchError';
 
     return {
-        komponent: komponent,
         getProp: getProp,
         hasProp: hasProp,
         isEqual: isEqual,

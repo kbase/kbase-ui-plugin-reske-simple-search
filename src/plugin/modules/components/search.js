@@ -138,7 +138,7 @@ define([
     }
 
     function buildInputArea() {
-        return utils.komponent({
+        return ko.kb.komponent({
             name: 'reske-simple-search/search-bar',
             params: {
                 search: 'search'
@@ -170,7 +170,7 @@ define([
                 }
             }, [
                 label('Type '),
-                utils.komponent({
+                ko.kb.komponent({
                     name: 'reske-simple-search/type-filter-control',
                     params: {
                         search: 'search'
@@ -181,7 +181,7 @@ define([
     }
 
     function buildResultsArea() {
-        return utils.komponent({
+        return ko.kb.komponent({
             name: 'reske-simple-search/browser',
             params: {
                 search: 'search'
