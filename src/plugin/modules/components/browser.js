@@ -1,9 +1,11 @@
 define([
     'knockout-plus',
-    'kb_common/html'
+    'kb_common/html',
+    './searchResult'
 ], function (
     ko,
-    html
+    html,
+    SearchResultComponent
 ) {
     'use strict';
 
@@ -440,7 +442,7 @@ define([
                 class: styles.classes.items,
                 dataBind: {
                     component: {
-                        name: '"reske-simple-search/search-result"',
+                        name: SearchResultComponent.quotedName(),
                         params: {
                             search: 'search'
                         }
@@ -456,5 +458,5 @@ define([
             template: template()
         };
     }
-    return component;
+    return ko.kb.registerComponent(component);
 });

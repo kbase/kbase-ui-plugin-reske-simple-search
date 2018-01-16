@@ -1,9 +1,11 @@
 define([
     'knockout-plus',
-    'kb_common/html'
+    'kb_common/html',
+    './searchHelp'
 ], function (
     ko,
-    html
+    html,
+    SearchHelpComponent
 ) {
     'use strict';
 
@@ -16,7 +18,7 @@ define([
     function viewModel(params) {
         function doHelp() {
             params.search.showOverlay({
-                name: 'reske-simple-search/search-help',
+                name: SearchHelpComponent.name(),
                 params: {},
                 viewModel: {}
             });
@@ -348,5 +350,5 @@ define([
         };
     }
 
-    return component;
+    return ko.kb.registerComponent(component);
 });

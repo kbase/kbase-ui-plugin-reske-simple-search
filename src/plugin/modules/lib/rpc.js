@@ -13,7 +13,6 @@ define([
             var override = runtime.config(['services', moduleName, 'url'].join('.'));
             var token = runtime.service('session').getAuthToken();
             var client;
-            console.log('override?', override, moduleName);
             if (override) {
                 // console.log('overriding...', moduleName, override, token, functionName, params);
                 client = new GenericClient({
