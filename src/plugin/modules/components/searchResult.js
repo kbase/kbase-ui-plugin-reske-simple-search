@@ -114,5 +114,5 @@ define([
         };
     }
 
-    return component;
+    return ko.kb.registerComponent(component);
 });

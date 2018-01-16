@@ -3,13 +3,17 @@ define([
     'bluebird',
     'kb_common/html',
     'kb_common/ui',
-    '../lib/utils'
+    './typeFilterControl',
+    './browser',
+    './searchBar'
 ], function (
     ko,
     Promise,
     html,
     ui,
-    utils
+    TypeFilterControl,
+    BrowserComponent,
+    SearchBarComponent
 ) {
     'use strict';
 
@@ -139,7 +143,7 @@ define([
 
     function buildInputArea() {
         return ko.kb.komponent({
-            name: 'reske-simple-search/search-bar',
+            name: SearchBarComponent.name(),
             params: {
                 search: 'search'
             }
@@ -171,7 +175,7 @@ define([
             }, [
                 label('Type '),
                 ko.kb.komponent({
-                    name: 'reske-simple-search/type-filter-control',
+                    name: TypeFilterControl.name(),
                     params: {
                         search: 'search'
                     }
@@ -182,7 +186,7 @@ define([
 
     function buildResultsArea() {
         return ko.kb.komponent({
-            name: 'reske-simple-search/browser',
+            name: BrowserComponent.name(),
             params: {
                 search: 'search'
             }
@@ -256,5 +260,5 @@ define([
             template: template()
         };
     }
-    return component;
+    return ko.kb.registerComponent(component);
 });

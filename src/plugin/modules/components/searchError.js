@@ -15,8 +15,6 @@ define([
     function viewModel(params) {
         var search = params.hostVm;
 
-        console.log('in search error wrapper', params);
-
         var error = search.error;
 
         var code = ko.pureComputed(function () {
@@ -145,5 +143,5 @@ define([
         };
     }
 
-    return component;
+    return ko.kb.registerComponent(component);
 });

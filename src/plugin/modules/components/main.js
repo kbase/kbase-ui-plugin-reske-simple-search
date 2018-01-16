@@ -11,7 +11,10 @@ define([
     'kb_common/html',
     // local deps
     '../lib/utils',
-    '../lib/objectSearch'
+    '../lib/objectSearch',
+    './searchError',
+    './sharedIcon',
+    './search'
 ], function (
     Promise,
     ko,
@@ -19,7 +22,10 @@ define([
     marked,
     html,
     utils,
-    ObjectSearch
+    ObjectSearch,
+    SearchErrorComponent,
+    SharedIconComponent,
+    SearchComponent
 ) {
     'use strict';
 
@@ -29,9 +35,7 @@ define([
     function viewModel(params) {
         var runtime = params.runtime;
 
-
         var overlayComponent = ko.observable();
-        
         var showOverlay = ko.observable();
 
         showOverlay.subscribe(function (newValue) {
@@ -223,7 +227,7 @@ define([
                         });
                     }
                     showOverlay({
-                        name: 'reske-simple-search/search-error',
+                        name: SearchErrorComponent.name(),
                         type: 'error',
                         params: {
                             type: '"error"',
@@ -431,7 +435,7 @@ define([
                 label: 'Shared',
                 type: 'string',
                 width: 8,
-                component: 'reske-simple-search/shared-icon',
+                component: SharedIconComponent.name(),
                 headerStyle: {
                     textAlign: 'center'
                 },
@@ -504,13 +508,13 @@ define([
             }
         }, [
             ko.kb.komponent({
-                name: 'reske-simple-search/search',
+                name: SearchComponent.name(),
                 params: {
                     search: 'search'
                 }
             }),
             ko.kb.komponent({
-                name: 'generic/overlay-panel',
+                name: 'generic/overlay-panel-bootstrappish',
                 params: {
                     component: 'overlayComponent',
                     hostVm: 'search'
@@ -526,5 +530,5 @@ define([
         };
     }
 
-    return component;
+    return ko.kb.registerComponent(component);
 });

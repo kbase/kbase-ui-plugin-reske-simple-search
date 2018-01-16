@@ -2,9 +2,11 @@
 Top level panel for jgi search
 */
 define([
-    'knockout-plus'
+    'knockout-plus',
+    './components/main'
 ], function (
-    ko
+    ko,
+    MainComponent
 ) {
     'use strict';
 
@@ -15,7 +17,7 @@ define([
 
         function attach(node) {
             hostNode = node;
-            rootComponent = ko.kb.createRootComponent(runtime, 'reske-simple-search/main');
+            rootComponent = ko.kb.createRootComponent(runtime, MainComponent.name());
             container = hostNode.appendChild(rootComponent.node);
         }
 

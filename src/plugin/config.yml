@@ -19,54 +19,6 @@ install:
             id: kb_reskeSimpleSearch_panel
             type: factory
             css: true
-    ko-components:
-        -
-            name: reske-simple-search/main
-            module: components/main
-        -
-            name: reske-simple-search/search
-            module: components/search
-        -
-            name: reske-simple-search/search-bar
-            module: components/searchBar
-        -
-            name: reske-simple-search/browser
-            module: components/browser
-        -
-            name: reske-simple-search/search-result
-            module: components/searchResult
-        -
-            name: reske-simple-search/type-filter-control
-            module: components/typeFilterControl
-        -
-            name: reske-simple-search/shared-icon
-            module: components/sharedIcon   
-        -
-            name: reske-simple-search/search-help
-            module: components/searchHelp
-        -
-            name: reske-simple-search/search-error
-            module: components/searchError
-        # GENERIC
-        -
-            name: generic/dialog
-            module: components/generic/dialog
-        -
-            name: generic/table
-            module: components/generic/table
-        -
-            name: generic/overlay-panel
-            module: components/generic/overlayPanel
-        -
-            name: generic/overlay-panel-bootstrappish
-            module: components/generic/overlayPanelBootstrappish
-        -
-            name: generic/help
-            module: components/generic/help
-        -
-            name: generic/error
-            module: components/generic/error            
-
     routes:
         -
             path: ['search']
