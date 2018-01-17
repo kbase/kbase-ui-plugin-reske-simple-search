@@ -38,7 +38,7 @@ define([
 
             var client = new GenericClient({
                 url: runtime.config('services.reske.url'),
-                module: 'KBaseRelationEngine',
+                module: 'KBaseSearchEngine',
                 token: runtime.service('session').getAuthToken()
             });
 

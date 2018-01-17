@@ -27,10 +27,11 @@ define([
         });
 
         function objectSearch(param) {
+            console.log('object search with', param);
             var timer = Timer();
             timer.startTimer('search objects');
             // var start = new Date().getTime();
-            return rpc.call('KBaseRelationEngine', 'search_objects', [param])
+            return rpc.call('KBaseSearchEngine', 'search_objects', [param])
                 .catch(function (err) {
                     if (/Result window is too large/.test(err.message)) {
                         throw new utils.ReskeSearchError(
@@ -688,7 +689,7 @@ define([
                 }
             };
 
-            return rpc.call('KBaseRelationEngine', 'search_types', [param])
+            return rpc.call('KBaseSearchEngine', 'search_types', [param])
                 .then(function (result) {
                     var searchResult = result[0];
                     var typeToCount = {};
