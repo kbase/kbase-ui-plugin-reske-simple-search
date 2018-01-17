@@ -229,13 +229,12 @@ define([
                     showOverlay({
                         name: SearchErrorComponent.name(),
                         type: 'error',
-                        params: {
-                            type: '"error"',
-                            hostVm: 'search'
+                        viewModel: {
+                            error: error
                         }
                     });
                 })
-                .finally(function (value) {
+                .finally(function () {
                     // if (!thisSearch.cancelled) {
                     //     searching(false);
                     // }
