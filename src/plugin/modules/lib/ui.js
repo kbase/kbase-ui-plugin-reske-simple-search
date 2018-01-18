@@ -64,7 +64,7 @@ define([
         var buttonsContent = buttons.map(function (btn) {
             return button({
                 type: 'button',
-                class: 'btn btn-' + btn.type || 'default',
+                class: 'btn btn-' + (btn.type || 'default'),
                 dataBind: {
                     click: btn.onClick
                 }
@@ -194,7 +194,7 @@ define([
         var buttonsContent = buttons.map(function (btn) {
             return button({
                 type: 'button',
-                class: 'btn btn-' + btn.type || 'default',
+                class: 'btn btn-' + (btn.type || 'default'),
                 dataBind: {
                     click: btn.onClick
                 }
