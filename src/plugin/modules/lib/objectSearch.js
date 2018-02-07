@@ -54,16 +54,16 @@ define([
                         );
                     }
                 })          
-                .then(function (result) {
+                .spread(function (result) {
+                    console.log('search result', JSON.parse(JSON.stringify(result)));
                     // var finished = new Date().getTime();
                     timer.stopTimer('search objects');
                     timer.log();
                     // console.log('search_objects timing', finished - start);
-                    var hits = result[0];
 
                     // Here we modify each object result, essentially normalizing
                     // some properties and adding ui-specific properties.
-                    hits.objects.forEach(function (object, index) {
+                    result.objects.forEach(function (object, index) {
                         var type = Types.typeIt(object);
                         // object.type = type;
                         var typeDef = Types.typesMap[type];
@@ -97,17 +97,17 @@ define([
                         object.meta = {
                             workspace: reference,
                             ids: reference,
-                            resultNumber: index + hits.pagination.start + 1
+                            resultNumber: index + result.pagination.start + 1
                         };
                     });
 
                     // We have just updated the objects inside of hits, so we just return hits itself.
-                    return hits;
+                    return result;
                 });
         }
 
         var filter = {
-            object_type: null,
+            object_types: null,
             match_filter: {
                 full_text_in_all: null,
                 lookupInKeys: {}
@@ -167,15 +167,21 @@ define([
                     sorting_rules: arg.sortingRules || {}
                 };
                 var newFilter = {
-                    object_type: null,
+                    object_types: null,                   
                     match_filter: {
                         full_text_in_all: null,
+                        exclude_subobjects: 1,
                     }
                 };
 
                 if (arg.typeFilter.length > 0) {
-                    newFilter.object_type = arg.typeFilter[0];
+                    newFilter.object_types = arg.typeFilter;
+                } else {
+                    // The "all" filter is also set here if none was set.
+                    // TODO: this is only relevant until the subobjects api call works.
+                    newFilter.object_types = ['narrative', 'genome', 'assembly', 'pairedendlibrary', 'singleendlibrary'];
                 }
+                console.log('type filter', arg.typeFilter);
 
                 // Free text search
                 var freeTextTerm = arg.query;
@@ -186,7 +192,11 @@ define([
                 }
 
                 filter = newFilter;
-                param.object_type = filter.object_type;
+                // TODO: uncomment for multiple type indexes
+                param.object_types = filter.object_types;
+                // TODO: remove after multiple type indexes are released
+                // param.object_type = filter.object_types ? filter.object_types[0] : null;
+
                 param.match_filter = filter.match_filter;
 
                 arg.status('searching');
