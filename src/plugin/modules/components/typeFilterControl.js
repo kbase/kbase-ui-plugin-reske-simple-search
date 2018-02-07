@@ -70,7 +70,7 @@ define([
 
         function doSelectTypeFilter(data) {
             if (data.typeFilterInput() === '_select_') {
-                params.search.typeFilter([]);
+                params.search.typeFilter(['narrative', 'genome', 'assembly', 'pairedendlibrary', 'singleendlibrary']);
                 return;
             }
             params.search.typeFilter([data.typeFilterInput()]);
