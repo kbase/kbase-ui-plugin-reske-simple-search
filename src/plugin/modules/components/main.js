@@ -188,6 +188,7 @@ define([
                     ])
                         .spread(function (results, summary) {
                             // TODO: process the results here rather than inside executeSearch!
+                            console.log('search summary elapsed', summary.elapsed);
                             typeFilterOptions.forEach(function (option) {
                                 option.count(summary.typeToCount[option.value]);
                             });
