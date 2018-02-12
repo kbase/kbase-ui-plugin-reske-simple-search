@@ -21,13 +21,13 @@ install:
             css: true
     routes:
         -
-            path: ['search']
+            path: ['simple-search']
             widget: kb_reskeSimpleSearch_panel
             authorization: true
     menu:
         -
-            name: reske-simple-search
+            name: simple-search
             definition:
-                path: search
+                path: simple-search
                 label: Search
                 icon: search
