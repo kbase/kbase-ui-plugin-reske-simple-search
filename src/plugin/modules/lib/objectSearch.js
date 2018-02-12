@@ -181,7 +181,6 @@ define([
                     // TODO: this is only relevant until the subobjects api call works.
                     newFilter.object_types = ['narrative', 'genome', 'assembly', 'pairedendlibrary', 'singleendlibrary'];
                 }
-                console.log('type filter', arg.typeFilter);
 
                 // Free text search
                 var freeTextTerm = arg.query;
