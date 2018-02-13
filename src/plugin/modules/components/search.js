@@ -5,7 +5,8 @@ define([
     'kb_common/ui',
     './typeFilterControl',
     './browser',
-    './searchBar'
+    './searchBar',
+    './dataSourceFilter'
 ], function (
     ko,
     Promise,
@@ -13,7 +14,8 @@ define([
     ui,
     TypeFilterControl,
     BrowserComponent,
-    SearchBarComponent
+    SearchBarComponent,
+    DataSourceFilterComponent
 ) {
     'use strict';
 
@@ -96,28 +98,28 @@ define([
                         checked: '$component.search.withPrivateData'
                     }
                 }),
-                ' Own Data'
+                ' Private'
             ])),
-            span({
-                dataBind: {
-                    css: '$component.withSharedData() ? "' + styles.classes.activeFilterInput + '" : null'
-                },
-                class: ['form-control', styles.classes.checkboxControl]    
-            }, label({
-                style: {
-                    fontWeight: 'normal',
-                    marginRight: '4px',
-                    marginLeft: '6px'
-                }
-            }, [
-                input({
-                    type: 'checkbox',
-                    dataBind: {
-                        checked: '$component.withSharedData'
-                    }
-                }),
-                ' Shared with you'
-            ])),
+            // span({
+            //     dataBind: {
+            //         css: '$component.withSharedData() ? "' + styles.classes.activeFilterInput + '" : null'
+            //     },
+            //     class: ['form-control', styles.classes.checkboxControl]    
+            // }, label({
+            //     style: {
+            //         fontWeight: 'normal',
+            //         marginRight: '4px',
+            //         marginLeft: '6px'
+            //     }
+            // }, [
+            //     input({
+            //         type: 'checkbox',
+            //         dataBind: {
+            //             checked: '$component.withSharedData'
+            //         }
+            //     }),
+            //     ' Shared with you'
+            // ])),
             span({
                 dataBind: {
                     css: '$component.search.withPublicData() ? "' + styles.classes.activeFilterInput + '" : null'
@@ -157,6 +159,8 @@ define([
                 display: 'inline-block'
             }
         }, [
+
+            // Ownership filter
             span({
                 style: {
                     fontWeight: 'bold',
@@ -167,6 +171,25 @@ define([
             }, 'Filters: '),
             buildSearchFilters(),
             
+            
+
+            // Reference / Narrative data filter
+            div({
+                style: {
+                    display: 'inline-block',
+                    marginLeft: '12px'
+                }
+            }, [
+                label('Data Source'),
+                ko.kb.komponent({
+                    name: DataSourceFilterComponent.name(),
+                    params: {
+                        sourceTags: 'search.sourceTags'
+                    }
+                })
+            ]),
+
+            // Type fiter
             div({
                 style: {
                     display: 'inline-block',
@@ -181,6 +204,7 @@ define([
                     }
                 })
             ])
+
         ]);
     }
 

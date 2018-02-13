@@ -84,6 +84,10 @@ define([
             return item;
         });
 
+        var sourceTags = ko.observableArray();
+        var sourceTagsInverted = ko.observable(false);
+        var useSourceTags = ko.observable(false);
+
         var searchResults = ko.observableArray();
         var searchTotal = ko.observable();
         var actualSearchTotal = ko.observable();
@@ -163,6 +167,16 @@ define([
                         params: params                    
                     };
                     searchStack.push(searchId);
+
+                    var sourceTags;
+                    var sourceTagsIsBlacklist;
+                    if (params.useSourceTags) {
+                        sourceTags = params.sourceTags;
+                        sourceTagsIsBlacklist = params.sourceTagsInverted;
+                    } else {
+                        sourceTags = null;
+                        sourceTagsIsBlacklist = null;
+                    }
                     
                     return Promise.all([
                         objectSearch.executeSearch({
@@ -173,6 +187,8 @@ define([
                             withPublicData: params.withPublicData,
                             typeFilter: params.typeFilter,
                             sortingRules: params.sortingRules,
+                            sourceTags: sourceTags,
+                            sourceTagsIsBlacklist: sourceTagsIsBlacklist,
 
                             status: status,
                             // searchExpression: searchExpression,
@@ -290,7 +306,10 @@ define([
                 typeFilter: typeFilter(),
                 page: page(),
                 pageSize: pageSize(),
-                sortingRules: sortingRules()
+                sortingRules: sortingRules(),
+                sourceTags: sourceTags(),
+                sourceTagsInverted: sourceTagsInverted(),
+                useSourceTags: useSourceTags()
             };
         });
 
@@ -299,11 +318,15 @@ define([
                 query: searchQuery(),
                 withPrivateData: withPrivateData(),
                 withPublicData: withPublicData(),
-                typeFilter: typeFilter()
+                typeFilter: typeFilter(),
+                sourceTags: sourceTags(),
+                sourceTagsInverted: sourceTagsInverted(),
+                useSourceTags: useSourceTags()
             };
         });
 
         searchInputs.subscribe(function () {
+            console.log('searchinputs changed...');
             page(1);
             doSearch(searchParams());
         });
@@ -452,6 +475,8 @@ define([
             }
         });
 
+       
+
         var vm = {
             search: {
                 // INPUTS
@@ -461,6 +486,11 @@ define([
                 typeFilterOptions: typeFilterOptions,
                 withPrivateData: withPrivateData,
                 withPublicData: withPublicData,
+                sourceTags: {
+                    tags: sourceTags,
+                    inverted: sourceTagsInverted,
+                    use: useSourceTags
+                },
 
                 // SYNTHESIZED INPUTS
                 searchQuery: searchQuery,

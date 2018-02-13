@@ -171,6 +171,8 @@ define([
                     match_filter: {
                         full_text_in_all: null,
                         exclude_subobjects: 1,
+                        source_tags: arg.sourceTags,
+                        source_tags_blacklist: arg.sourceTagsIsBlacklist ? 1 : 0
                     }
                 };
 
