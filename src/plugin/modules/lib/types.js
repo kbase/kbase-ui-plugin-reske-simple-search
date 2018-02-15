@@ -24,7 +24,7 @@ define([
         resultId: 'Narrative',
         label: 'Narrative',
         methods: narrative,
-        typeKeys: ['cells', 'metadata'],
+        typeKeys: ['cells?', 'metadata'],
         searchKeys: [{
             key: 'title',
             label: 'Title',
@@ -338,7 +338,8 @@ define([
         resultId: 'PairedEndLibrary',
         label: 'Paired End Library',
         methods: pairedEndLibrary,
-        typeKeys: [], // ['insert_size_mean', 'lib1', 'sequencing_tech'],
+        // typeKeys: [], // ['insert_size_mean', 'lib1', 'sequencing_tech'],
+        typeKeys: ['lib1', 'gc_content', 'phred_type', 'qual_mean', 'read_count', 'read_length_mean', 'sequencing_tech'],
         typeKeyProps: ['files', 'gc_content', 'insert_size', 'phred_type', 'quality', 'read_count', 'read_length', 'technology'],
         searchKeys: [{
             key: 'technology',
@@ -404,8 +405,9 @@ define([
         resultId: 'SingleEndLibrary',
         label: 'Single End Library',
         methods: singleEndLibrary,
-        typeKeys: [], // ['lib1', 'lib2', 'sequencing_tech'],
-        typeKeyProps: ['files', 'gc_content', 'insert_size', 'phred_type', 'quality', 'read_count', 'read_length', 'technology'],
+        // typeKeys: [], // ['lib1', 'lib2', 'sequencing_tech'],
+        typeKeys: ['lib', 'gc_content', 'lib', 'phred_type', 'qual_mean', 'read_count', 'read_length_mean', 'sequencing_tech'],
+        // typeKeyProps: ['files', 'gc_content', 'insert_size', 'phred_type', 'quality', 'read_count', 'read_length', 'technology'],
         searchKeys: [{
             key: 'technology',
             label: 'Sequencing Technology',
@@ -491,7 +493,7 @@ define([
             var type = objectTypes[i];
             // loop through each key and see if in the current values data property.
             var keys = type.typeKeys;
-            if (keys.every(function (key) {
+            if (keys && keys.every(function (key) {
                 var optional = false;
                 if (key.substr(-1) === '?') {
                     optional = true;
@@ -512,7 +514,7 @@ define([
             type = objectTypes[i];
             // loop through each key and see if in the current values data property.
             keys = type.typeKeyProps;
-            if (keys.every(function (key) {
+            if (keys && keys.every(function (key) {
                 var optional = false;
                 if (key.substr(-1) === '?') {
                     optional = true;
@@ -527,6 +529,7 @@ define([
                 return type.id;
             }
         }
+        console.warn('could not type', value);
         return 'unknown';
     }
 
