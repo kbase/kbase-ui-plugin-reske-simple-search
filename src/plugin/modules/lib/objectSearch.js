@@ -101,9 +101,10 @@ define([
                         };
                     });
 
-                    // We have just updated the objects inside of hits, so we just return hits itself.
+                    // We have just updated the objects inside of hits, so we just return hits itself.  
                     return result;
                 });
+                
         }
 
         var filter = {
@@ -692,7 +693,10 @@ define([
             }
             var param = self.searchTypesInput = {
                 match_filter: {
-                    full_text_in_all: query || null
+                    full_text_in_all: query || null,
+                    exclude_subobjects: 1,
+                    source_tags: arg.sourceTags,
+                    source_tags_blacklist: arg.sourceTagsIsBlacklist ? 1 : 0
                 },
                 access_filter: {
                     with_private: withPrivate ? 1 : 0,

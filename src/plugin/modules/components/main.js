@@ -199,7 +199,9 @@ define([
                         objectSearch.searchAllTypes({
                             query: params.query,
                             withPrivateData: params.withPrivateData,
-                            withPublicData: params.withPublicData
+                            withPublicData: params.withPublicData,
+                            sourceTags: sourceTags,
+                            sourceTagsIsBlacklist: sourceTagsIsBlacklist
                         })
                     ])
                         .spread(function (results, summary) {
