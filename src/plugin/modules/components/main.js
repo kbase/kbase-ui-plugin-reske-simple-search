@@ -77,6 +77,14 @@ define([
             label: 'Single-End Read',
             value: 'singleendlibrary',
             count: ko.observable()
+        }, {
+            label: 'FBA Model',
+            value: 'fbamodel',
+            count: ko.observable()
+        }, {
+            label: 'Media',
+            value: 'media',
+            count: ko.observable()
         }].map(function (item) {
             item.enabled = ko.pureComputed(function () {
                 return typeFilter().indexOf(item.value) === -1;

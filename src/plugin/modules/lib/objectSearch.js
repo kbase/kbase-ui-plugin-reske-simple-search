@@ -182,7 +182,8 @@ define([
                 } else {
                     // The "all" filter is also set here if none was set.
                     // TODO: this is only relevant until the subobjects api call works.
-                    newFilter.object_types = ['narrative', 'genome', 'assembly', 'pairedendlibrary', 'singleendlibrary'];
+                    // newFilter.object_types = ['narrative', 'genome', 'assembly', 'pairedendlibrary', 'singleendlibrary'];
+                    newFilter.object_types = null;
                 }
 
                 // Free text search
@@ -677,7 +678,7 @@ define([
             return searchResult;
         }
 
-        var typesToShow = ['narrative', 'genome', 'assembly', 'pairedendlibrary', 'singleendlibrary'];
+        // var typesToShow = ['narrative', 'genome', 'assembly', 'pairedendlibrary', 'singleendlibrary', 'fbamodel', 'media'];
         
         function searchAllTypes(arg) {
             var query = arg.query;
@@ -705,13 +706,12 @@ define([
             };
 
             return rpc.call('KBaseSearchEngine', 'search_types', [param])
-                .then(function (result) {
-                    var searchResult = result[0];
+                .spread(function (searchResult) {
                     var typeToCount = {};
                     var hits = Types.types
-                        .filter(function (type) {
-                            return (typesToShow.indexOf(type.id) >= 0);
-                        })
+                        // .filter(function (type) {
+                        //     return (typesToShow.indexOf(type.id) >= 0);
+                        // })
                         .map(function (type) {
                             // what a mess -- this is what the call returns -- essentially
                             // a camel-cased version of the index, which we have in the types
@@ -724,7 +724,7 @@ define([
                                 title: type.label,
                                 hitCount: hitCount
                             };
-                        });
+                        });                        
                     return {
                         hits: hits,
                         typeToCount: typeToCount,

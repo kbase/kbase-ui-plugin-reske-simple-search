@@ -5,7 +5,9 @@ define([
     '../interfaces/type/assembly',
     '../interfaces/type/assemblyContig',
     '../interfaces/type/pairedEndLibrary',
-    '../interfaces/type/singleEndLibrary'
+    '../interfaces/type/singleEndLibrary',
+    '../interfaces/type/fbaModel',
+    '../interfaces/type/media'
 ], function (
     narrative,
     genome,
@@ -13,7 +15,9 @@ define([
     assembly,
     assemblyContig,
     pairedEndLibrary,
-    singleEndLibrary
+    singleEndLibrary,
+    fbaModel,
+    media
 ) {
     'use strict';
 
@@ -460,6 +464,26 @@ define([
             isTimestamp: false,
             isObjectName: false
         }]
+    }, {
+        id: 'fbamodel',
+        uiId: 'fbaModel',
+        kbaseTypeId: 'FBAModel',
+        resultId: 'FBAModel',
+        label: 'FBA Model',
+        methods: fbaModel,
+        searchKeys: [
+        ],
+        sortFields: []
+    }, {
+        id: 'media',
+        uiId: 'media',
+        kbaseTypeId: 'Media',
+        resultId: 'Media',
+        label: 'Media',
+        methods: media,
+        searchKeys: [
+        ],
+        sortFields: []
     }];
     var objectTypeMap = {};
     objectTypes.forEach(function (type) {
@@ -484,53 +508,67 @@ define([
         return objectTypeMap[key];
     }
 
+    function getTypeForObject(searchObject) {
+        var type = objectTypeMap[searchObject.object_props.type.toLowerCase()];
+
+        if (!type) {
+            console.error('Object type not found!!!', searchObject, objectTypeMap);
+            throw new Error('Object type not found!!: ' + searchObject.object_props.type);
+        }
+
+        return type;
+        // return type.module.make({object: searchObject});
+    }
+
     function typeIt(value) {
-        // duck typing for now...
-        // loop through all types (as defined above)
-        // NB use loop because .find is not suppported on any IE.
-        // var types = Object.keys(objectTypes);
-        for (var i = 0; i < objectTypes.length; i += 1) {
-            var type = objectTypes[i];
-            // loop through each key and see if in the current values data property.
-            var keys = type.typeKeys;
-            if (keys && keys.every(function (key) {
-                var optional = false;
-                if (key.substr(-1) === '?') {
-                    optional = true;
-                    key = key.substr(0, -1);
-                }
-                var found = (key in value.data);
-                if (!found && optional) {
-                    return true;
-                }
-                return found;
-            })) {
-                return type.id;
-            }
-        }
-        // Try again with typeKeys -- these should be more reliable but they are not
-        // yet set up for all types.
-        for (i = 0; i < objectTypes.length; i += 1) {
-            type = objectTypes[i];
-            // loop through each key and see if in the current values data property.
-            keys = type.typeKeyProps;
-            if (keys && keys.every(function (key) {
-                var optional = false;
-                if (key.substr(-1) === '?') {
-                    optional = true;
-                    key = key.substr(0, -1);
-                }
-                var found = (key in value.key_props);
-                if (!found && optional) {
-                    return true;
-                }
-                return found;
-            })) {
-                return type.id;
-            }
-        }
-        console.warn('could not type', value);
-        return 'unknown';
+        var type = getTypeForObject(value);
+        return type.id;
+        // // duck typing for now...
+        // // loop through all types (as defined above)
+        // // NB use loop because .find is not suppported on any IE.
+        // // var types = Object.keys(objectTypes);
+        // for (var i = 0; i < objectTypes.length; i += 1) {
+        //     var type = objectTypes[i];
+        //     // loop through each key and see if in the current values data property.
+        //     var keys = type.typeKeys;
+        //     if (keys && keys.every(function (key) {
+        //         var optional = false;
+        //         if (key.substr(-1) === '?') {
+        //             optional = true;
+        //             key = key.substr(0, -1);
+        //         }
+        //         var found = (key in value.data);
+        //         if (!found && optional) {
+        //             return true;
+        //         }
+        //         return found;
+        //     })) {
+        //         return type.id;
+        //     }
+        // }
+        // // Try again with typeKeys -- these should be more reliable but they are not
+        // // yet set up for all types.
+        // for (i = 0; i < objectTypes.length; i += 1) {
+        //     type = objectTypes[i];
+        //     // loop through each key and see if in the current values data property.
+        //     keys = type.typeKeyProps;
+        //     if (keys && keys.every(function (key) {
+        //         var optional = false;
+        //         if (key.substr(-1) === '?') {
+        //             optional = true;
+        //             key = key.substr(0, -1);
+        //         }
+        //         var found = (key in value.key_props);
+        //         if (!found && optional) {
+        //             return true;
+        //         }
+        //         return found;
+        //     })) {
+        //         return type.id;
+        //     }
+        // }
+        // console.warn('could not type', value);
+        // return 'unknown';
     }
 
     function getLookup() {
