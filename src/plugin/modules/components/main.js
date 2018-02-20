@@ -282,11 +282,10 @@ define([
 
         var sortingRules = ko.observableArray();
         function sortBy(sortSpec) {
-            var sortRule = {
-                is_timestamp: sortSpec.isTimestamp ? 1 : 0,
-                is_object_name: sortSpec.isObjectName ? 1 : 0,
-                key_name: sortSpec.keyName,
-                descending: sortSpec.direction() === 'descending' ? 1 : 0
+            var sortRule ={
+                is_object_property: sortSpec.isObjectProperty ? 1 : 0,
+                property: sortSpec.keyName,
+                ascending: sortSpec.direction() === 'descending' ? 0 : 1
             };
             sortingRules.removeAll();
             sortingRules.push(sortRule);
@@ -446,9 +445,8 @@ define([
                 type: 'date',
                 format: 'nice-elapsed',
                 sort: {
-                    keyName: 'date',
-                    isTimestamp: true,
-                    isObject: false,
+                    keyName: 'timestamp',
+                    isObjectProperty: false,
                     direction: ko.observable('descending'),
                     active: ko.observable(true)
                 },
