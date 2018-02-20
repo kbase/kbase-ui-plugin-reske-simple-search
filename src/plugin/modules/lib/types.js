@@ -91,10 +91,9 @@ define([
         }],
         // Note translated into api-speak.
         defaultSortingRules: [{
-            is_timestamp: 1,
-            is_object_name: 0,
-            key_name: 'timestamp',
-            descending: 1
+            is_object_property: 0,
+            property: 'timestamp',
+            ascending: 0
         }],
         defaultSearch: {
             key: 'cr'
