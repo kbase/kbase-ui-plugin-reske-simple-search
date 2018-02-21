@@ -35,7 +35,7 @@ define([
     function normalizeToNarrative(object, options) {
         // try to suss out interesting narrative bits.
         var cells;
-        if (!object.data.cells) {
+        if (!object.data || !object.data.cells) {
             cells = [];
         } else {
             cells = object.data.cells.map(function (cell) {
@@ -178,30 +178,29 @@ define([
         });
 
         object['narrative'] = {
-            title: object.data.metadata.name,
-            description: 'narrative description here...',
-            cells: {
-                show: ko.observable(false),
-                doToggleShow: function (data) {
-                    data.show(!data.show());
-                },
-                cells: cells
-            },
-            markdownCells: {
-                show: ko.observable(false),
-                doToggleShow: function (data) {
-                    data.show(!data.show());
-                },
-                cells: cells.filter(function (cell) {
-                    return (cell.type === 'markdown');
-                })
-            },
-            cellCount: cells.length,
-            appCellCount: cellTypeCounts.app || 0,
-            dataCellCount: ((cellTypeCounts.output || 0) + (cellTypeCounts.data || 0)),
-            markdownCellCount: cellTypeCounts.markdown || 0,
-            codeCellCount: cellTypeCounts.code || 0,
-            dataObjectCount: object.workspaceInfo.object_count - 1 // approximate, because there may be hidden objects.
+            title: object.key_props.title,
+            // cells: {
+            //     show: ko.observable(false),
+            //     doToggleShow: function (data) {
+            //         data.show(!data.show());
+            //     },
+            //     cells: cells
+            // },
+            // markdownCells: {
+            //     show: ko.observable(false),
+            //     doToggleShow: function (data) {
+            //         data.show(!data.show());
+            //     },
+            //     cells: cells.filter(function (cell) {
+            //         return (cell.type === 'markdown');
+            //     })
+            // },
+            // cellCount: cells.length,
+            // appCellCount: cellTypeCounts.app || 0,
+            // dataCellCount: ((cellTypeCounts.output || 0) + (cellTypeCounts.data || 0)),
+            // markdownCellCount: cellTypeCounts.markdown || 0,
+            // codeCellCount: cellTypeCounts.code || 0,
+            // dataObjectCount: object.workspaceInfo.object_count - 1 // approximate, because there may be hidden objects.
         };
     }
 
