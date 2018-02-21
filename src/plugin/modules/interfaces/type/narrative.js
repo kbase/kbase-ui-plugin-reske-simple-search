@@ -35,7 +35,7 @@ define([
     function normalizeToNarrative(object, options) {
         // try to suss out interesting narrative bits.
         var cells;
-        if (!object.data.cells) {
+        if (!object.data || !object.data.cells) {
             cells = [];
         } else {
             cells = object.data.cells.map(function (cell) {
