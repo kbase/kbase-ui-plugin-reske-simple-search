@@ -49,7 +49,6 @@ define([
                     inverted(true);
                 } else {
                     // if just ref, include refdata
-                    // can't exclude noindex in this case, oh well.
                     tags.removeAll();
                     tags.push('refdata');
                     use(true);
