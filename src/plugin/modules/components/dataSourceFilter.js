@@ -42,10 +42,14 @@ define([
         function evaluate() {
             if (searchReference()) {
                 if (searchNarratives()) {
+                    // searching both, just omit 'noindex';
                     use(false);
                     tags.removeAll();
-                    inverted(false);
+                    tags.push('noindex');
+                    inverted(true);
                 } else {
+                    // if just ref, include refdata
+                    // can't exclude noindex in this case, oh well.
                     tags.removeAll();
                     tags.push('refdata');
                     use(true);
@@ -53,13 +57,18 @@ define([
                 }
             } else {
                 if (searchNarratives()) {
+                    // just searching narratives, exclude refdata and noindex.
                     tags.removeAll();
                     tags.push('refdata');
+                    tags.push('noindex');
                     use(true);
                     inverted(true);
                 } else {
+                    // no way to really do this (not narrative, not refdata).
+                    // other than a fake stag.
                     use(true);
-                    tags.removeAll();                    
+                    tags.removeAll();
+                    tags.push('not-a-known-tag');       
                     inverted(false);
                 }
             }
